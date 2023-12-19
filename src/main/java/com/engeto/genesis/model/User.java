@@ -32,6 +32,9 @@ public class User {
     @Size(max = 255)
     private String uuid;
 
+    public User() {
+    }
+
     public User(@NotNull String name, String surname, @NotNull String personId, @NotNull String uuid) {
         this.name = name;
         this.surname = surname;
