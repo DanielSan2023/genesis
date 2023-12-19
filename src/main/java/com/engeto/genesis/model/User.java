@@ -1,5 +1,6 @@
 package com.engeto.genesis.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class User {
     @NotNull
     @Size(max = 255)
     private String name;
-
+    @Nullable
     @Size(max = 255)
     private String surname;
 
