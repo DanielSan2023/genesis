@@ -7,41 +7,51 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
-
 
 
 import java.sql.PreparedStatement;
 
+import java.sql.Statement;
 import java.util.List;
 
 @Component
-public class UserRepository{
+public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserRowMapper userRowMapper= new UserRowMapper();
+    private final UserRowMapper userRowMapper = new UserRowMapper();
+    KeyHolder keyHolder = new GeneratedKeyHolder();
 
 
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-           }
+    }
 
-
-    public void createUser(User user) {
+    public User createUser(User user) {
         String sql = "INSERT INTO user (name, surname, person_id, uuid) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql);
+
+        int affectedRows = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
             ps.setString(3, user.getPersonId());
             ps.setString(4, user.getUuid());
             return ps;
-        });
+        }, keyHolder);
+        if (affectedRows > 0) {
+            Long generatedId = keyHolder.getKey().longValue();
+            return getUserById(generatedId);
+        } else {
+            //throw new RuntimeException("Failed to create user.");
+            return null;
+        }
     }
 
+
     public User getUserById(Long id) {
-        String sql = "select * from user where user.id = "+id;
+        String sql = "select * from user where user.id = " + id;
         try {
             return jdbcTemplate.queryForObject(sql, userRowMapper);
         } catch (EmptyResultDataAccessException e) {

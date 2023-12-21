@@ -25,28 +25,24 @@ public class UserService {
     }
 
 
-    public void createUser(User user) {
+    public User createUser(User user) {
         if (!isValidPersonID(user.getPersonId()) || userRepository.existsByPersonID(user.getPersonId())) {
             throw new IllegalArgumentException("Neplatné nebo duplicitní personID.");
         }
-
         String uuid = UUID.randomUUID().toString();
-
         User newUser = new User();
         newUser.setName(user.getName());
         newUser.setSurname(user.getSurname());
-
         newUser.setPersonId(user.getPersonId());
         newUser.setUuid(uuid);
 
-        userRepository.createUser(newUser);
+        return userRepository.createUser(newUser);
     }
 
 
     private boolean isValidPersonID(String personID) {
         return personID != null && personID.length() == 12;
     }
-
 
     public void delete(Long id) {
         userRepository.deleteUser(id);

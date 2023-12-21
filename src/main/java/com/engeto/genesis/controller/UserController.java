@@ -19,15 +19,22 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public void createUser(@RequestBody User user) {
-        userService.createUser(user);
+    public ResponseEntity createUser(@RequestBody User user) {
+        User checkUser = userService.createUser(user);
+        if (checkUser != null) {
+            return new ResponseEntity<>(checkUser, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity getUserById(@PathVariable Long id) {
         User userById = userService.getUserById(id);
         if (userById == null) {
-            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+            return ResponseEntity
+                    .status(HttpStatus.PRECONDITION_FAILED)
+                    .body("User with id: " + id + " does not exist");
         }
         return new ResponseEntity(userById, HttpStatus.OK);
     }
