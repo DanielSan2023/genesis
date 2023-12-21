@@ -2,11 +2,8 @@ package com.engeto.genesis.repository;
 
 import com.engeto.genesis.mapper.UserRowMapper;
 import com.engeto.genesis.model.User;
-
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -29,6 +26,7 @@ public class UserRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     public User createUser(User user) {
         String sql = "INSERT INTO user (name, surname, person_id, uuid) VALUES (?, ?, ?, ?)";
 
@@ -44,8 +42,7 @@ public class UserRepository {
             Long generatedId = keyHolder.getKey().longValue();
             return getUserById(generatedId);
         } else {
-            //throw new RuntimeException("Failed to create user.");
-            return null;
+            return null;  //throw new RuntimeException("Failed to create user.");
         }
     }
 
@@ -64,10 +61,16 @@ public class UserRepository {
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
-    public void updateUser(Long id, User updatedUser) {
-        final String sql = "UPDATE user SET name = ?, surname = ? WHERE id = ?";
+    public List<User> getAllUsersDetail() {
+        final String sql = "select * from user";
+        return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    public void updateUserById(Long id, User updatedUser) {
+        final String sql = "update user set name = ?, surname = ? WHERE id = ?";
         jdbcTemplate.update(sql, updatedUser.getName(), updatedUser.getSurname(), id);
     }
+
 
     public void deleteUser(Long id) {
         final String sql = "delete from user where id = ?";

@@ -20,4 +20,6 @@ public class UserRowMapper implements RowMapper<User> {
         user.setUuid(rs.getString("uuid"));
         return user;
     }
+
+
 }

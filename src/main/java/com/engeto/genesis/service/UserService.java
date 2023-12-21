@@ -20,6 +20,10 @@ public class UserService {
         return userRepository.getAllUsers();
     }
 
+    public List<User> getUsersDetail() {
+        return userRepository.getAllUsersDetail();
+    }
+
     public User getUserById(Long id) {
         return userRepository.getUserById(id);
     }
@@ -39,13 +43,17 @@ public class UserService {
         return userRepository.createUser(newUser);
     }
 
-
     private boolean isValidPersonID(String personID) {
         return personID != null && personID.length() == 12;
+    }
+
+    public void updateUserById(Long id,User user) {
+        userRepository.updateUserById(id,user);
     }
 
     public void delete(Long id) {
         userRepository.deleteUser(id);
     }
+
 
 }
