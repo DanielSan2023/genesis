@@ -15,41 +15,41 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+
     public List<User> getUsers() {
         return userRepository.getAllUsers();
     }
 
-    public User get(Long id){
+    public User getUserById(Long id) {
         return userRepository.getUserById(id);
     }
 
-    public void createUser(User user){
 
-
-        // Validace personID a ověření, zda uživatel již neexistuje v databázi
+    public void createUser(User user) {
         if (!isValidPersonID(user.getPersonId()) || userRepository.existsByPersonID(user.getPersonId())) {
             throw new IllegalArgumentException("Neplatné nebo duplicitní personID.");
         }
 
-        // Vygenerování UUID
         String uuid = UUID.randomUUID().toString();
 
-        // Vytvoření instance User
         User newUser = new User();
         newUser.setName(user.getName());
         newUser.setSurname(user.getSurname());
+
         newUser.setPersonId(user.getPersonId());
         newUser.setUuid(uuid);
 
-        // Uložení uživatele do databáze
         userRepository.createUser(newUser);
     }
 
+
     private boolean isValidPersonID(String personID) {
-        // Zde provedete ověření personID podle vašich požadavků
-        // Například můžete ověřit délku, formát, apod.
         return personID != null && personID.length() == 12;
     }
 
+
+    public void delete(Long id) {
+        userRepository.deleteUser(id);
+    }
 
 }

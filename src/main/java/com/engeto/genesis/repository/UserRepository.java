@@ -2,28 +2,31 @@ package com.engeto.genesis.repository;
 
 import com.engeto.genesis.mapper.UserRowMapper;
 import com.engeto.genesis.model.User;
+
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.jdbc.repository.query.Query;
+
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
+
 import org.springframework.stereotype.Component;
 
-import java.sql.Connection;
+
+
+
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
 import java.util.List;
 
-
 @Component
-public class UserRepository {
+public class UserRepository{
 
-    private final UserRowMapper userRowMapper;
     private final JdbcTemplate jdbcTemplate;
+    private final UserRowMapper userRowMapper= new UserRowMapper();
 
-    public UserRepository(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
+
+    public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userRowMapper = userRowMapper;
-    }
+           }
+
 
     public void createUser(User user) {
         String sql = "INSERT INTO user (name, surname, person_id, uuid) VALUES (?, ?, ?, ?)";
@@ -38,18 +41,27 @@ public class UserRepository {
     }
 
     public User getUserById(Long id) {
-        String sql = "select * from user where user.id = " + id;
+        String sql = "select * from user where user.id = "+id;
         try {
             return jdbcTemplate.queryForObject(sql, userRowMapper);
         } catch (EmptyResultDataAccessException e) {
         }
         return null;
-
     }
 
     public List<User> getAllUsers() {
         final String sql = "select * from user";
         return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    public void updateUser(Long id, User updatedUser) {
+        final String sql = "UPDATE user SET name = ?, surname = ? WHERE id = ?";
+        jdbcTemplate.update(sql, updatedUser.getName(), updatedUser.getSurname(), id);
+    }
+
+    public void deleteUser(Long id) {
+        final String sql = "delete from user where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     public boolean existsByPersonID(String personID) {
@@ -59,11 +71,5 @@ public class UserRepository {
     }
 
 
-
 }
-
-
-//    public void deleteStudent(Long id) {
-//        students.removeIf(student -> student.getId().equals(id));
-//    }
 

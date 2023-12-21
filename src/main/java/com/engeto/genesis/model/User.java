@@ -1,41 +1,40 @@
 package com.engeto.genesis.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.validation.constraints.Size;
-import org.jetbrains.annotations.NotNull;
+import jdk.jfr.Name;
 import org.springframework.data.annotation.Id;
-
-import java.util.Objects;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 
 @Entity
+@Table(name = "user")
 public class User {
+    @Column
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "primary_sequence"
+    )
     private Long id;
 
-    @NotNull
-    @Size(max = 255)
+    @Column
     private String name;
-    @Nullable
-    @Size(max = 255)
+    @Column
     private String surname;
 
-    @NotNull
-    @Size(max = 255)
+    @Column
     private String personId;
 
-    @NotNull
-    @Size(max = 255)
+    @Column
     private String uuid;
 
     public User() {
     }
 
-    public User(@NotNull String name, String surname, @NotNull String personId, @NotNull String uuid) {
+    public User( String name, String surname, String personId, String uuid) {
         this.name = name;
         this.surname = surname;
         this.personId = personId;
@@ -82,16 +81,5 @@ public class User {
         this.uuid = uuid;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(surname, user.surname) && Objects.equals(personId, user.personId) && Objects.equals(uuid, user.uuid);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, surname, personId, uuid);
-    }
 }
