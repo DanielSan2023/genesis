@@ -5,17 +5,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.UUID;
 
 
 class UserTest {
 
-    User user;
+    UserInfo user;
 
     @BeforeEach
     void setUp() {
-        user = new User(
+        user = new UserInfo(
                 "Jack",
                 "Sperow",
                 "25461",

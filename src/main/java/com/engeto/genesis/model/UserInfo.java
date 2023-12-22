@@ -1,18 +1,10 @@
 package com.engeto.genesis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jdk.jfr.Name;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
-
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
-public class User {
-    @Column
+public class UserInfo {
+
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -31,10 +23,10 @@ public class User {
     @Column
     private String uuid;
 
-    public User() {
+    public UserInfo() {
     }
 
-    public User( String name, String surname, String personId, String uuid) {
+    public UserInfo(String name, String surname, String personId, String uuid) {
         this.name = name;
         this.surname = surname;
         this.personId = personId;

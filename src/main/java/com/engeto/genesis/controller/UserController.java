@@ -1,6 +1,6 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.model.User;
+import com.engeto.genesis.model.UserInfo;
 import com.engeto.genesis.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,10 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity createUser(@RequestBody User user) {
-        User checkUser = userService.createUser(user);
-        if (checkUser != null) {
-            return new ResponseEntity<>(checkUser, HttpStatus.CREATED);
+    public ResponseEntity createUser(@RequestBody UserInfo userInfo) {
+        UserInfo checkUserInfo = userService.createUser(userInfo);
+        if (checkUserInfo != null) {
+            return new ResponseEntity<>(checkUserInfo, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -29,13 +29,13 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity getUserById(@PathVariable Long id) {
-        User userById = userService.getUserById(id);
-        if (userById == null) {
+        UserInfo userInfoById = userService.getUserById(id);
+        if (userInfoById == null) {
             return ResponseEntity
                     .status(HttpStatus.PRECONDITION_FAILED)
                     .body("User with id: " + id + " does not exist");
         }
-        return new ResponseEntity(userById, HttpStatus.OK);
+        return new ResponseEntity(userInfoById, HttpStatus.OK);
     }
 
 
@@ -43,11 +43,12 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
+        userService.createUser(new UserInfo("mike", "wazovsky", "somePersonId", "someUuid"));   //TODO just for test
         if (detail) {
-            List<User> usersList = userService.getUsersDetail();
+            List<UserInfo> usersList = userService.getUsersDetail();
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         } else {
-            List<User> usersList = userService.getUsers();
+            List<UserInfo> usersList = userService.getUsers();
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         }
 
@@ -65,9 +66,9 @@ public class UserController {
 
 
     @PutMapping("/user/{id}")
-    public ResponseEntity updateUserById(@PathVariable("id") Long id, @RequestBody User updateUser) {
+    public ResponseEntity updateUserById(@PathVariable("id") Long id, @RequestBody UserInfo updateUserInfo) {
         if (userService.getUserById(id) != null) {
-            userService.updateUserById(id, updateUser);
+            userService.updateUserById(id, updateUserInfo);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity

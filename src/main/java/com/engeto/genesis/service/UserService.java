@@ -1,11 +1,10 @@
 package com.engeto.genesis.service;
 
-import com.engeto.genesis.model.User;
+import com.engeto.genesis.model.UserInfo;
 import com.engeto.genesis.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -16,43 +15,32 @@ public class UserService {
     }
 
 
-    public List<User> getUsers() {
-        return userRepository.getAllUsers();
+    public List<UserInfo> getUsers() {
+        return userRepository.findAll();
     }
 
-    public List<User> getUsersDetail() {
-        return userRepository.getAllUsersDetail();
+    public List<UserInfo> getUsersDetail() {
+        return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.getUserById(id);
+    public UserInfo getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
-
-    public User createUser(User user) {
-        if (!isValidPersonID(user.getPersonId()) || userRepository.existsByPersonID(user.getPersonId())) {
-            throw new IllegalArgumentException("Neplatné nebo duplicitní personID.");
-        }
-        String uuid = UUID.randomUUID().toString();
-        User newUser = new User();
-        newUser.setName(user.getName());
-        newUser.setSurname(user.getSurname());
-        newUser.setPersonId(user.getPersonId());
-        newUser.setUuid(uuid);
-
-        return userRepository.createUser(newUser);
+    public UserInfo createUser(UserInfo userInfo) {
+        return userRepository.save(userInfo);
     }
 
     private boolean isValidPersonID(String personID) {
         return personID != null && personID.length() == 12;
     }
 
-    public void updateUserById(Long id,User user) {
-        userRepository.updateUserById(id,user);
+    public void updateUserById(Long id, UserInfo userInfo) {
+//        userRepository.updateUserById(id, userInfo);
     }
 
     public void delete(Long id) {
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
 
