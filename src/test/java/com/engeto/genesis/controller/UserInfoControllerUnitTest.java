@@ -1,7 +1,7 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.model.UserInfo;
-import com.engeto.genesis.service.UserService;
+import com.engeto.genesis.domain.UserInfo;
+import com.engeto.genesis.service.UserInfoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,14 +18,14 @@ import static org.mockito.Mockito.when;
 class UserInfoControllerUnitTest {
 
     @Mock
-    private UserService userService;
+    private UserInfoService userInfoService;
 
     @InjectMocks
     private UserController userController;
 
     @Test
     void GIVEN_mocked_createUser_as_null_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
-        when(userService.createUser(any())).thenReturn(null);
+        when(userInfoService.createUser(any())).thenReturn(null);
 
         ResponseEntity<UserInfo> returnValue = userController.createUser(new UserInfo());
 
@@ -34,7 +34,7 @@ class UserInfoControllerUnitTest {
 
     @Test
     void GIVEN_mocked_createUser_as_created_object_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
-        when(userService.createUser(any())).thenReturn(new UserInfo());
+        when(userInfoService.createUser(any())).thenReturn(new UserInfo());
 
         ResponseEntity<UserInfo> returnValue = userController.createUser(new UserInfo());
 

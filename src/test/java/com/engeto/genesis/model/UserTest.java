@@ -1,5 +1,6 @@
 package com.engeto.genesis.model;
 
+import com.engeto.genesis.domain.UserInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
