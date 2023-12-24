@@ -20,6 +20,7 @@ class UserInfoControllerRestTest {
 
     @Test
     void greetingShouldReturnDefaultMessage() {
+
         UserInfo[] actual = restTemplate.getForObject("http://localhost:" + port + "/api/v1/users", UserInfo[].class);
 
         assertThat(actual[0].getId()).isEqualTo(1);

@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
+
     private final UserInfoService userInfoService;
 
     public UserController(UserInfoService userInfoService) {
@@ -19,71 +20,59 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity createUser(@RequestBody UserInfo userInfo) {
-        UserInfo checkUserInfo = userInfoService.createUser(userInfo);
-        if (checkUserInfo != null) {
-            return new ResponseEntity<>(checkUserInfo, HttpStatus.CREATED);
+    public ResponseEntity<HttpStatus> createUser(@RequestBody UserInfoDTO userInfoDTO) {
+        UserInfo convertedUserInfo = userInfoService.convertToEntity(userInfoDTO);
+        UserInfo createdUserInfo = userInfoService.createUser(convertedUserInfo);
+        if (createdUserInfo != null) {
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
+
     @GetMapping("/user/{id}")
-    public ResponseEntity getUserById(@PathVariable Long id) {
-        UserInfo userInfoById = userInfoService.getUserById(id);
+    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id) {
+        UserInfoDTO userInfoById = userInfoService.getUserById(id);
         if (userInfoById == null) {
-            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("User with id: " + id + " does not exist");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(userInfoById, HttpStatus.OK);
     }
 
 
-
-
-    @GetMapping("/users")
-    public ResponseEntity getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
-        userInfoService.createUser(new UserInfo("mike", "wazovsky", "somePersonId", "someUuid"));   //TODO just for test
+    @GetMapping("/users")//TODO user detail
+    public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
+        userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         if (detail) {
-            List<UserInfoDTO> usersList = userInfoService.findAllUsers();
+            List<UserInfoDTO> usersList = userInfoService.findAllUsersDetail();
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         } else {
             List<UserInfoDTO> usersList = userInfoService.findAllUsers();
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         }
 
-
     }
-
-//    @GetMapping("/users")   //TODO user detail
-//    public ResponseEntity<List<UserInfoDTO>> getAll() {
-//        userInfoService.createUser(
-//                new UserInfo("mike",
-//                        "wazovsky",
-//                        "somePersonId",
-//                        "someUuid"));   //TODO just for test
-//        List<UserInfoDTO> usersList = userInfoService.findAllUsers();
-//        return new ResponseEntity<>(usersList, HttpStatus.OK);
-//    }
 
 
     @PutMapping("/user/{id}")
-    public ResponseEntity updateUserById(@PathVariable("id") Long id, @RequestBody UserInfo updateUserInfo) {
+    public ResponseEntity<HttpStatus> updateUserById(@PathVariable("id") Long id, @RequestBody UserInfoDTO updateUserInfoDTO) {
         if (userInfoService.getUserById(id) != null) {
-            userInfoService.updateUserById(id, updateUserInfo);
-            return ResponseEntity.ok().build();
+            userInfoService.updateUserById(id, updateUserInfoDTO);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("User with id: " + id + " does not exist");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
         if (userInfoService.getUserById(id) != null) {
             userInfoService.delete(id);
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("User with id: " + id + " does not exist");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
