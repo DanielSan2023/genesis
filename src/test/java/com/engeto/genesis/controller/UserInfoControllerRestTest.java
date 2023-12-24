@@ -1,6 +1,6 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.model.UserInfo;
+import com.engeto.genesis.domain.UserInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

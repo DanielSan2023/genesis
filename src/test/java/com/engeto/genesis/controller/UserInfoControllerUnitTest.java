@@ -1,6 +1,6 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.model.UserInfo;
+import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

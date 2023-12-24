@@ -1,6 +1,6 @@
 package com.engeto.genesis.service;
 
-import com.engeto.genesis.model.UserInfo;
+import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
