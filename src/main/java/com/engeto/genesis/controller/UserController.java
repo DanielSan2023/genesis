@@ -3,6 +3,7 @@ package com.engeto.genesis.controller;
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +21,19 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<HttpStatus> createUser(@RequestBody UserInfoDTO userInfoDTO) {
-        UserInfo convertedUserInfo = userInfoService.convertToEntity(userInfoDTO);
-        UserInfo createdUserInfo = userInfoService.createUser(convertedUserInfo);
+    public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userInfoDTO, userInfo);
+        UserInfo createdUserInfo=userInfoService.createUser(userInfo);
         if (createdUserInfo != null) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(userInfoDTO,HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(userInfoDTO,HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{id}") //TODO make user detail
     public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id) {
         UserInfoDTO userInfoById = userInfoService.getUserById(id);
         if (userInfoById == null) {
@@ -41,7 +43,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/users")//TODO user detail
+    @GetMapping("/users")//TODO make user detail
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         if (detail) {
@@ -70,7 +72,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
         if (userInfoService.getUserById(id) != null) {
             userInfoService.delete(id);
-            return ResponseEntity.ok().build();
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

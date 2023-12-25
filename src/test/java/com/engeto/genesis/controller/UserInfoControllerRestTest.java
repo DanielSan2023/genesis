@@ -26,7 +26,7 @@ class UserInfoControllerRestTest {
         assertThat(actual[0].getId()).isEqualTo(1);
         assertThat(actual[0].getName()).isEqualTo("mike");
         assertThat(actual[0].getSurname()).isEqualTo("wazovsky");
-        assertThat(actual[0].getPersonId()).isEqualTo("somePersonId");
+        assertThat(actual[0].getPersonId()).isEqualTo("123456789123");
         assertThat(actual[0].getUuid()).isEqualTo("someUuid");
     }
 

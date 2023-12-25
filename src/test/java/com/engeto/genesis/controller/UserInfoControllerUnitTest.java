@@ -24,24 +24,32 @@ class UserInfoControllerUnitTest {
     @InjectMocks
     private UserController userController;
 
-//    @Test
-//    void GIVEN_mocked_createUser_as_null_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
-//        when(userInfoService.createUser(any())).thenReturn(null);
-//
-//        ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
-//
-//        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
-//
-//    @Test
-//    void GIVEN_mocked_createUser_as_created_object_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
-//        when(userInfoService.createUser(any())).thenReturn(new UserInfo());
-//
-//        ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
-//
-//        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//
-//        UserInfoDTO body = returnValue.getBody();
-//        assertThat(body).isNotNull();
-//    }
+    @Test
+    void GIVEN_mocked_createUser_as_null_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
+        // Konfigurácia mocka na simuláciu chyby (vrátenie null)
+        when(userInfoService.createUser(any())).thenReturn(null);
+
+        // Zavolať metódu v UserController
+        ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
+
+        // Overiť, či výsledný stav a telo sú v súlade s očakávaním
+        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(returnValue.getBody()).isNull();
+    }
+
+    @Test
+    void GIVEN_mocked_createUser_as_created_object_WHEN_createUser_is_called_THEN_CREATED_status_and_non_null_body_is_returned() {
+        // Konfigurácia mocka na simuláciu úspešného vytvorenia
+        when(userInfoService.createUser(any())).thenReturn(new UserInfo());
+
+        // Zavolať metódu v UserController
+        ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
+
+        // Overiť, či výsledný stav a objekt nie sú null
+        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(returnValue.getBody()).isNotNull();
+    }
+
+
+
 }

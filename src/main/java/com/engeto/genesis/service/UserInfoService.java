@@ -3,8 +3,8 @@ package com.engeto.genesis.service;
 
 import com.engeto.genesis.domain.UserInfo;
 
+
 import com.engeto.genesis.model.UserInfoDTO;
-import com.engeto.genesis.model.UserInfoDTOBasic;
 import com.engeto.genesis.repository.UserInfoRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 public class UserInfoService {
-    public static final int max_Person_Id_Lenght = 12;
+    public static final int MAX_LENGTH_PERSON_ID = 12;
     private final UserInfoRepository userInfoRepository;
 
     public UserInfoService(UserInfoRepository userInfoRepository) {
@@ -27,6 +27,7 @@ public class UserInfoService {
                 .map(userInfo -> convertToDTO(userInfo, new UserInfoDTO()))
                 .toList();
     }
+
     public List<UserInfoDTO> findAllUsers() {
         final List<UserInfo> userInfoes = userInfoRepository.findAll(Sort.by("id"));
         return userInfoes.stream()
@@ -43,7 +44,6 @@ public class UserInfoService {
         userInfoDTO.setUuid(userInfo.getUuid());
         return userInfoDTO;
     }
-
 
 
     private UserInfo mapToDomain(final UserInfoDTO userInfoDTO) {
@@ -63,7 +63,7 @@ public class UserInfoService {
 
     public UserInfo createUser(UserInfo userInfo) {
         String personId = userInfo.getPersonId();
-        if (personId.length() == max_Person_Id_Lenght && !(userInfoRepository.existsByPersonIdIgnoreCase(personId))) {
+        if (personId.length() == MAX_LENGTH_PERSON_ID && !(userInfoRepository.existsByPersonIdIgnoreCase(personId))) {
             return userInfoRepository.save(userInfo);
         } else {
             return null;
@@ -86,24 +86,4 @@ public class UserInfoService {
     }
 
 
-    public UserInfo convertToEntity(UserInfoDTO userInfoDTO) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(userInfoDTO.getId());
-        userInfo.setName(userInfoDTO.getName());
-        userInfo.setSurname(userInfoDTO.getSurname());
-        userInfo.setPersonId(userInfoDTO.getPersonId());
-        userInfo.setUuid(userInfoDTO.getUuid());
-        return userInfo;
-
-    }
-
-    private UserInfoDTO convertToDTO(UserInfo userInfo) {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setId(userInfo.getId());
-        userInfoDTO.setName(userInfo.getName());
-        userInfoDTO.setSurname(userInfo.getSurname());
-        userInfoDTO.setPersonId(userInfo.getPersonId());
-        userInfoDTO.setUuid(userInfo.getUuid());
-        return userInfoDTO;
-    }
 }

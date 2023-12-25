@@ -23,10 +23,10 @@ public class UserInfo {
     @Column
     private String surname;
 
-    @Column
+    @Column(unique = true)
     private String personId;
 
-    @Column
+    @Column(unique = true)
     private String uuid;
 
     public UserInfo() {
