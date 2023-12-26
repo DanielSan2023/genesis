@@ -40,7 +40,7 @@ public class UserInfoService {
     }
 
 
-    private UserInfoDTO convertToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
+    UserInfoDTO convertToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
         userInfoDTO.setId(userInfo.getId());
         userInfoDTO.setName(userInfo.getName());
         userInfoDTO.setSurname(userInfo.getSurname());

@@ -48,14 +48,17 @@ public class UserController {
     @GetMapping("/users")//TODO make user detail
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
+        List<UserInfoDTO> usersList;
         if (detail) {
-            List<UserInfoDTO> usersList = userInfoService.findAllUsersDetail();
-            return new ResponseEntity<>(usersList, HttpStatus.OK);
+            usersList = userInfoService.findAllUsersDetail();
         } else {
-            List<UserInfoDTO> usersList = userInfoService.findAllUsers();
+            usersList = userInfoService.findAllUsers();
+        }
+        if (usersList == null || usersList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         }
-
     }
 
 
@@ -72,12 +75,8 @@ public class UserController {
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
-        if (userInfoService.getUserById(id) != null) {
-            userInfoService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        userInfoService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
