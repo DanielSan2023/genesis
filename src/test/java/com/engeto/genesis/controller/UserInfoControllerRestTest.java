@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserInfoControllerRestTest {
@@ -17,6 +19,7 @@ class UserInfoControllerRestTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
 
     @Test
     void greetingShouldReturnDefaultMessage() {
@@ -29,5 +32,7 @@ class UserInfoControllerRestTest {
         assertThat(actual[0].getPersonId()).isEqualTo("123456789123");
         assertThat(actual[0].getUuid()).isEqualTo("someUuid");
     }
+
+
 
 }

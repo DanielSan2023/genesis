@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
@@ -26,28 +28,55 @@ class UserInfoControllerUnitTest {
 
     @Test
     void GIVEN_mocked_createUser_as_null_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
-        // Konfigurácia mocka na simuláciu chyby (vrátenie null)
         when(userInfoService.createUser(any())).thenReturn(null);
 
-        // Zavolať metódu v UserController
         ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
 
-        // Overiť, či výsledný stav a telo sú v súlade s očakávaním
         assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(returnValue.getBody()).isNull();
     }
 
     @Test
     void GIVEN_mocked_createUser_as_created_object_WHEN_createUser_is_called_THEN_CREATED_status_and_non_null_body_is_returned() {
-        // Konfigurácia mocka na simuláciu úspešného vytvorenia
         when(userInfoService.createUser(any())).thenReturn(new UserInfo());
 
-        // Zavolať metódu v UserController
         ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
 
-        // Overiť, či výsledný stav a objekt nie sú null
         assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(returnValue.getBody()).isNotNull();
+    }
+
+    @Test
+    void GIVEN_mocked_getUser_By_Id_as_null_object_When_getUserById_is_called_THEN_NOT_FOUND_is_returned() {
+        Long userInfoId = 1L;
+        when(userInfoService.getUserById(userInfoId)).thenReturn(null);
+
+        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId);
+
+        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(returnValue.getBody()).isNull();
+    }
+
+    @Test
+    void GIVEN_mocked_getUser_By_Id_as_receive_object_WHEN_getUserById_is_called_THEN_CREATED_status_and_non_null_body_is_returned() {
+        Long userInfoId = 1L;
+        when(userInfoService.getUserById(userInfoId)).thenReturn(new UserInfoDTO());
+
+        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId);
+
+        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(returnValue.getBody()).isNotNull();
+    }
+
+
+    @Test
+    void GIVEN_mocked_getAllUser_as_receive_List_UserInfo_WHEN_findAllUsers_is_called_THEN_NOT_FOUND_is_returned() {
+        when(userInfoService.findAllUsers()).thenReturn(null);
+
+        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAll(true);
+
+        assertThat(userInfosList.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(userInfosList.getBody()).isNull();
     }
 
 

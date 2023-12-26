@@ -22,15 +22,19 @@ public class UserInfoService {
 
 
     public List<UserInfoDTO> findAllUsersDetail() {
-        final List<UserInfo> userInfoes = userInfoRepository.findAll(Sort.by("id"));
-        return userInfoes.stream()
+        final List<UserInfo> userInfos = userInfoRepository.findAll(Sort.by("id"));
+        return userInfos.stream()
                 .map(userInfo -> convertToDTO(userInfo, new UserInfoDTO()))
                 .toList();
     }
 
     public List<UserInfoDTO> findAllUsers() {
-        final List<UserInfo> userInfoes = userInfoRepository.findAll(Sort.by("id"));
-        return userInfoes.stream()
+        final List<UserInfo> userInfos = userInfoRepository.findAll(Sort.by("id"));
+        userInfos.forEach(user -> {
+            user.setPersonId(null);
+            user.setUuid(null);
+        });
+        return userInfos.stream()
                 .map(userInfo -> convertToDTO(userInfo, new UserInfoDTO()))
                 .toList();
     }

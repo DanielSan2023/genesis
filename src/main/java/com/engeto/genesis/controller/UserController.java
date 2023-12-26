@@ -24,11 +24,13 @@ public class UserController {
     public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfo userInfo = new UserInfo();
         BeanUtils.copyProperties(userInfoDTO, userInfo);
-        UserInfo createdUserInfo=userInfoService.createUser(userInfo);
+        UserInfo createdUserInfo = userInfoService.createUser(userInfo);
+
         if (createdUserInfo != null) {
-            return new ResponseEntity<>(userInfoDTO,HttpStatus.CREATED);
+            BeanUtils.copyProperties(userInfo, userInfoDTO);
+            return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(userInfoDTO,HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(userInfoDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
