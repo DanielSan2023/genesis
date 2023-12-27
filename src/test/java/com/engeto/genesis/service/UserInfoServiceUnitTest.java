@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
@@ -28,6 +29,44 @@ public class UserInfoServiceUnitTest {
     @InjectMocks
     private UserInfoService userInfoService;
 
+    @Test
+    void GIVEN_db_with_non_existing_person_id_WHEN_createUser_is_called_THEN_save_is_called_once() {
+        //GIVEN
+        String personId = "somePersonId";
+        UserInfo userInfo = createUserInfo(personId);
+
+        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
+
+        //WHEN
+        userInfoService.createUser(userInfo);
+
+        //THEN
+        Mockito.verify(userInfoRepository, times(1)).save(userInfo);
+    }
+
+    @Test
+    void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {
+        //GIVEN
+        String personId = "somePersonId";
+        UserInfo userInfo = createUserInfo(personId);
+
+        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
+
+        //WHEN
+        userInfoService.createUser(userInfo);
+
+        //THEN
+        Mockito.verify(userInfoRepository, times(0)).save(userInfo);
+    }
+
+    private UserInfo createUserInfo(String personId) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setPersonId(personId);
+
+        return userInfo;
+    }
+
+    //TODO add test for testing MAX_LENGTH_PERSON_ID
 
     @Test
     public void testFindAllUsersDetail() {
