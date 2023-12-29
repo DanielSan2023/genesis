@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,6 +69,15 @@ public class UserInfoServiceUnitTest {
     }
 
     //TODO add test for testing MAX_LENGTH_PERSON_ID
+    @Test
+    public void test_Max_Length_Person_Id_With_Correct_Id_Length() {
+        int expectedMaxLength = 12;
+
+        int actualMaxLength = UserInfoService.MAX_LENGTH_PERSON_ID;
+
+        assertEquals(expectedMaxLength, actualMaxLength);
+    }
+
 
     @Test
     public void testFindAllUsersDetail() {
@@ -77,13 +88,11 @@ public class UserInfoServiceUnitTest {
         when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
         List<UserInfoDTO> resultList = userInfoService.findAllUsersDetail();
 
-        // Verify that the repository method was called with the correct parameters
         verify(userInfoRepository).findAll(Sort.by("id"));
 
         assertEquals(EXPECTED_NUMBER_OF_SIZE, resultList.size());
         verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).convertToDTO(any(UserInfo.class), any(UserInfoDTO.class));
     }
-
 
 
 }

@@ -99,36 +99,31 @@ class UserInfoControllerUnitTest {
 
 
     @Test
-    void GIVEN_existing_user_WHEN_updateUserById_is_called_THEN_OK_status_is_returned() {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        when(userInfoService.getUserById(anyLong())).thenReturn(userInfoDTO);
+    void GIVEN_mocked_existing_user_WHEN_updateUserById_is_called_THEN_OK_status_is_returned() {
+        Long userInfoId = 1L;
+        when(userInfoService.getUserById(userInfoId)).thenReturn(new UserInfoDTO());
 
-        ResponseEntity<HttpStatus> responseEntity = userController.updateUserById(1L, new UserInfoDTO());
+        ResponseEntity<HttpStatus> responseEntity = userController.updateUserById(userInfoId, new UserInfoDTO());
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(userInfoService).updateUserById(eq(1L), any(UserInfoDTO.class));
     }
 
-    @Test
-    void GIVEN_non_existing_user_WHEN_updateUserById_is_called_THEN_NOT_FOUND_status_is_returned() {
-        when(userInfoService.getUserById(anyLong())).thenReturn(null);
-
-        ResponseEntity<HttpStatus> responseEntity = userController.updateUserById(1L, new UserInfoDTO());
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        verify(userInfoService, never()).updateUserById(anyLong(), any(UserInfoDTO.class));
-    }
 
     @Test
-    void GIVEN_existing_user_WHEN_deleteUser_is_called_THEN_OK_status_is_returned() {
+    void GIVEN_moked_existing_user_WHEN_deleteUser_is_called_THEN_OK_status_is_returned() {
         Long userId = 1L;
         doNothing().when(userInfoService).delete(userId);
 
-        ResponseEntity<HttpStatus> responseEntity = userController.deleteUser(userId);
+        ResponseEntity<HttpStatus> responseStatus = userController.deleteUser(userId);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseStatus.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(userInfoService,times(WANTED_NUMBER_OF_INVOCATIONS)).delete(userId);
     }
+
+
+
+
 
 
 

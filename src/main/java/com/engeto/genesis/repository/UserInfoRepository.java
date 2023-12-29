@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 
-   boolean existsByPersonIdIgnoreCase(String personId);
+    boolean existsByPersonIdIgnoreCase(String personId);
 }
 
 

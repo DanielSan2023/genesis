@@ -30,8 +30,7 @@ public class UserController {
             BeanUtils.copyProperties(userInfo, userInfoDTO);
             return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(userInfoDTO, HttpStatus.INTERNAL_SERVER_ERROR);
-
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -45,7 +44,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/users")//TODO make user detail
+    @GetMapping("/users")
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         List<UserInfoDTO> usersList;
@@ -70,7 +69,6 @@ public class UserController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
 
     @DeleteMapping("/user/{id}")

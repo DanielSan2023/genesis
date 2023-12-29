@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserInfoService {
@@ -66,6 +67,8 @@ public class UserInfoService {
 
 
     public UserInfo createUser(UserInfo userInfo) {
+        UUID uuid = UUID.randomUUID();
+        userInfo.setUuid(String.valueOf(uuid));
         String personId = userInfo.getPersonId();
         if (personId.length() == MAX_LENGTH_PERSON_ID && !(userInfoRepository.existsByPersonIdIgnoreCase(personId))) {
             return userInfoRepository.save(userInfo);
