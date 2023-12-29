@@ -29,4 +29,10 @@ public class UserInfoDTO {
     private String uuid;
 
 
+    public UserInfoDTO(String name, String surname, String personId, String uuid) {
+        this.name = name;
+        this.surname = surname;
+        this.personId = personId;
+        this.uuid = uuid;
+    }
 }

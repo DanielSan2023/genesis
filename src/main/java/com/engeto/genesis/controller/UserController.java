@@ -19,20 +19,29 @@ public class UserController {
     public UserController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }
+//
+//    @PostMapping("/user")
+//    public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
+//        UserInfo userInfo = new UserInfo();
+//        BeanUtils.copyProperties(userInfoDTO, userInfo);
+//        UserInfo createdUserInfo = userInfoService.createUser(userInfo);
+//
+//        if (createdUserInfo != null) {
+//            BeanUtils.copyProperties(userInfo, userInfoDTO);
+//            return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
+//        }
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @PostMapping("/user")
     public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
-        UserInfo userInfo = new UserInfo();
-        BeanUtils.copyProperties(userInfoDTO, userInfo);
-        UserInfo createdUserInfo = userInfoService.createUser(userInfo);
+        UserInfoDTO createdUserInfo = userInfoService.createUser(userInfoDTO);
 
         if (createdUserInfo != null) {
-            BeanUtils.copyProperties(userInfo, userInfoDTO);
             return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
     @GetMapping("/user/{id}") //TODO make user detail
     public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id) {
@@ -46,7 +55,7 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
-        userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
+        userInfoService.createUser(new UserInfoDTO("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         List<UserInfoDTO> usersList;
         if (detail) {
             usersList = userInfoService.findAllUsersDetail();

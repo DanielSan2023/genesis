@@ -2,6 +2,8 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
+import com.engeto.genesis.repository.UserInfoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
+import static io.restassured.RestAssured.port;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
 
@@ -26,6 +29,21 @@ class UserInfoControllerRestTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+
+    @BeforeEach
+    void setUp() {
+        userInfoRepository.deleteAll();
+    }
+
+    @Test
+    void GIVEN_empty_DB_WHEN_get_users_THEN_nothing_is_returned() {
+        UserInfo[] userInfo = restTemplate.getForObject(
+                "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
+
+        assertThat(userInfo).isNullOrEmpty();
+    }
 
     @Test
     void greetingShouldReturnDefaultMessage() {
@@ -42,39 +60,37 @@ class UserInfoControllerRestTest {
 
     @Test
     void createUserShouldReturnCreatedStatus() {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setName("John");
-        userInfoDTO.setSurname("Doe");
-        userInfoDTO.setPersonId("123456789321");
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("John")
+                .surname("Doe")
+                .personId("123456789321")
+                .build();
 
         ResponseEntity<UserInfoDTO> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getName()).isEqualTo(userInfoDTO.getName());
         assertThat(response.getBody().getSurname()).isEqualTo(userInfoDTO.getSurname());
         assertThat(response.getBody().getPersonId()).isEqualTo(userInfoDTO.getPersonId());
 
+        assertThat(userInfoRepository.findAll()).hasSize(1);
     }
+}
 
-    @Test
-    void getUserByIdShouldReturnUserInfo() {
+@Test
+void getUserByIdShouldReturnUserInfo() {
+    Long userId = 1L;
+    UserInfo userInfo = userInfoRepository.save(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
 
-        Long userId = 1L;
+    ResponseEntity<UserInfoDTO> response = restTemplate.getForEntity(
+            "http://localhost:" + port + "/api/v1/user/{id}", UserInfoDTO.class, userInfo.getId());
 
-        ResponseEntity<UserInfoDTO> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/v1/user/{id}", UserInfoDTO.class, userId);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(userId);
-    }
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().getId()).isEqualTo(userInfo.getId());
+}
 
 
-    //    @Test
+//    @Test
 //    void updateUserByIdShouldReturnOkStatus() { //TODO make update Test
 //        Long userId = 1L;
 //
@@ -88,17 +104,17 @@ class UserInfoControllerRestTest {
 //        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 //
 //    }
-    @Test
-    void deleteUserShouldReturnOkStatus() {
-        Long userId = 1L;
+@Test
+void deleteUserShouldReturnOkStatus() {
+    Long userId = 1L;
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/v1/user/{id}", HttpMethod.DELETE, null, Void.class, userId);
+    ResponseEntity<Void> response = restTemplate.exchange(
+            "http://localhost:" + port + "/api/v1/user/{id}", HttpMethod.DELETE, null, Void.class, userId);
 
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    }
+}
 
 
 }

@@ -35,37 +35,38 @@ public class UserInfoServiceUnitTest {
     void GIVEN_db_with_non_existing_person_id_WHEN_createUser_is_called_THEN_save_is_called_once() {
         //GIVEN
         String personId = "somePersonId";
-        UserInfo userInfo = createUserInfo(personId);
+        UserInfoDTO userInfoDTO = createUserInfo(personId);
 
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
 
         //WHEN
-        userInfoService.createUser(userInfo);
+        userInfoService.createUser(userInfoDTO);
 
         //THEN
-        Mockito.verify(userInfoRepository, times(1)).save(userInfo);
+         Mockito.verify(userInfoRepository, times(1)).save(new UserInfo());
     }
 
     @Test
     void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {
         //GIVEN
         String personId = "somePersonId";
-        UserInfo userInfo = createUserInfo(personId);
+        UserInfoDTO  userInfoDTO = createUserInfo(personId);
+
 
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
 
         //WHEN
-        userInfoService.createUser(userInfo);
+        userInfoService.createUser(userInfoDTO);
 
         //THEN
-        Mockito.verify(userInfoRepository, times(0)).save(userInfo);
+        Mockito.verify(userInfoRepository, times(0)).save(new UserInfo());
     }
 
-    private UserInfo createUserInfo(String personId) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setPersonId(personId);
+    private UserInfoDTO createUserInfo(String personId) {
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setPersonId(personId);
 
-        return userInfo;
+        return userInfoDTO;
     }
 
     //TODO add test for testing MAX_LENGTH_PERSON_ID

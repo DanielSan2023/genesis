@@ -43,7 +43,7 @@ class UserInfoControllerUnitTest {
 
     @Test
     void GIVEN_mocked_createUser_as_created_object_WHEN_createUser_is_called_THEN_CREATED_status_and_non_null_body_is_returned() {
-        when(userInfoService.createUser(any())).thenReturn(new UserInfo());
+        when(userInfoService.createUser(any())).thenReturn(new UserInfoDTO());
 
         ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
 

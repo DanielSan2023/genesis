@@ -6,6 +6,7 @@ import com.engeto.genesis.domain.UserInfo;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -66,12 +67,16 @@ public class UserInfoService {
     }
 
 
-    public UserInfo createUser(UserInfo userInfo) {
+    public UserInfoDTO createUser(UserInfoDTO userInfoDTO) {
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userInfoDTO, userInfo);
+
         UUID uuid = UUID.randomUUID();
         userInfo.setUuid(String.valueOf(uuid));
         String personId = userInfo.getPersonId();
         if (personId.length() == MAX_LENGTH_PERSON_ID && !(userInfoRepository.existsByPersonIdIgnoreCase(personId))) {
-            return userInfoRepository.save(userInfo);
+            BeanUtils.copyProperties(userInfoRepository.save(userInfo), userInfoDTO);
+            return userInfoDTO;
         } else {
             return null;
         }
