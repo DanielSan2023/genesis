@@ -6,9 +6,12 @@ import com.engeto.genesis.service.UserInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -46,14 +49,13 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
-        userInfoService.createUser(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         List<UserInfoDTO> usersList;
         if (detail) {
             usersList = userInfoService.findAllUsersDetail();
         } else {
             usersList = userInfoService.findAllUsers();
         }
-        if (usersList == null || usersList.isEmpty()) {
+        if (CollectionUtils.isEmpty(usersList)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(usersList, HttpStatus.OK);

@@ -2,20 +2,18 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
+import com.engeto.genesis.repository.UserInfoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.PUT;
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserInfoControllerRestTest {
@@ -26,14 +24,31 @@ class UserInfoControllerRestTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+
+    @BeforeEach
+    void setUp() {
+        userInfoRepository.deleteAll();
+    }
 
     @Test
-    void greetingShouldReturnDefaultMessage() {
+    void GIVEN_empty_DB_WHEN_get_users_THEN_nothing_is_returned() {
+        UserInfo[] userInfo = restTemplate.getForObject(
+                "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
+
+        assertThat(userInfo).isNullOrEmpty();
+    }
+
+    @Test
+    void GIVEN_one_user_in_DB_WHEN_get_users_THEN_one_user_is_returned() {
+        UserInfo userInfo = userInfoRepository.save(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
 
         UserInfo[] actual = restTemplate.getForObject(
                 "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
 
-        assertThat(actual[0].getId()).isEqualTo(1);
+        assertThat(actual).hasSize(1);
+        assertThat(actual[0].getId()).isEqualTo(userInfo.getId());
         assertThat(actual[0].getName()).isEqualTo("mike");
         assertThat(actual[0].getSurname()).isEqualTo("wazovsky");
         assertThat(actual[0].getPersonId()).isEqualTo("123456789123");
@@ -42,10 +57,11 @@ class UserInfoControllerRestTest {
 
     @Test
     void createUserShouldReturnCreatedStatus() {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setName("John");
-        userInfoDTO.setSurname("Doe");
-        userInfoDTO.setPersonId("123456789321");
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("John")
+                .surname("Doe")
+                .personId("123456789321")
+                .build();
 
         ResponseEntity<UserInfoDTO> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
@@ -57,22 +73,21 @@ class UserInfoControllerRestTest {
         assertThat(response.getBody().getSurname()).isEqualTo(userInfoDTO.getSurname());
         assertThat(response.getBody().getPersonId()).isEqualTo(userInfoDTO.getPersonId());
 
+        assertThat(userInfoRepository.findAll()).hasSize(1);
     }
 
     @Test
     void getUserByIdShouldReturnUserInfo() {
-
-        Long userId = 1L;
+        UserInfo userInfo = userInfoRepository.save(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
 
         ResponseEntity<UserInfoDTO> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/v1/user/{id}", UserInfoDTO.class, userId);
+                "http://localhost:" + port + "/api/v1/user/{id}", UserInfoDTO.class, userInfo.getId());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(userId);
+        assertThat(response.getBody().getId()).isEqualTo(userInfo.getId());
     }
-
 
     //    @Test
 //    void updateUserByIdShouldReturnOkStatus() { //TODO make update Test
@@ -99,6 +114,5 @@ class UserInfoControllerRestTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
-
 
 }
