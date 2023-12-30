@@ -1,9 +1,6 @@
 package com.engeto.genesis.service;
 
-
 import com.engeto.genesis.domain.UserInfo;
-
-
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +18,6 @@ public class UserInfoService {
     public UserInfoService(UserInfoRepository userInfoRepository) {
         this.userInfoRepository = userInfoRepository;
     }
-
 
     public List<UserInfoDTO> findAllUsersDetail() {
         final List<UserInfo> userInfos = userInfoRepository.findAll(Sort.by("id"));
@@ -41,7 +37,6 @@ public class UserInfoService {
                 .toList();
     }
 
-
     UserInfoDTO convertToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
         userInfoDTO.setId(userInfo.getId());
         userInfoDTO.setName(userInfo.getName());
@@ -51,7 +46,6 @@ public class UserInfoService {
         return userInfoDTO;
     }
 
-
     private UserInfo mapToDomain(final UserInfoDTO userInfoDTO) {
         UserInfo userInfo = new UserInfo();
         userInfo.setId(userInfoDTO.getId());
@@ -60,12 +54,10 @@ public class UserInfoService {
         return userInfo;
     }
 
-
     public UserInfoDTO getUserById(Long id) {
         UserInfo userInfoById = userInfoRepository.findById(id).orElse(null);
         return convertToDTO(userInfoById, new UserInfoDTO());
     }
-
 
     public UserInfoDTO createUser(UserInfoDTO userInfoDTO) {
         UserInfo userInfo = new UserInfo();
@@ -82,7 +74,6 @@ public class UserInfoService {
         }
     }
 
-
     public void updateUserById(Long id, UserInfoDTO userInfoDTO) {
         UserInfo convertUserInfo = mapToDomain(userInfoDTO);
         userInfoRepository.findById(id).ifPresent(existingUserInfo -> {
@@ -96,6 +87,5 @@ public class UserInfoService {
     public void delete(Long id) {
         userInfoRepository.deleteById(id);
     }
-
 
 }

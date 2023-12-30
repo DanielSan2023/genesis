@@ -1,6 +1,5 @@
 package com.engeto.genesis.repository;
 
-
 import com.engeto.genesis.domain.UserInfo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -68,6 +67,5 @@ public class UserInfoRepositoryTest {
         Assertions.assertThat(returnedUserInfo).isEmpty();
 
     }
-
 
 }

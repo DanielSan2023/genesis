@@ -1,20 +1,17 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +26,6 @@ class UserInfoControllerUnitTest {
 
     @InjectMocks
     private UserController userController;
-
 
     @Test
     void GIVEN_mocked_createUser_as_null_WHEN_createUser_is_called_THEN_INTERNAL_SERVER_ERROR_is_returned() {
@@ -73,7 +69,6 @@ class UserInfoControllerUnitTest {
         assertThat(returnValue.getBody()).isNotNull();
     }
 
-
     @Test
     void GIVEN_mocked_getAllUsers_as_null_WHEN_findAllUsers_is_called_THEN_NOT_FOUND_is_returned() {
         when(userInfoService.findAllUsersDetail()).thenReturn(null);
@@ -97,7 +92,6 @@ class UserInfoControllerUnitTest {
         assertThat(userInfosList.getBody()).isNotNull();
     }
 
-
     @Test
     void GIVEN_mocked_existing_user_WHEN_updateUserById_is_called_THEN_OK_status_is_returned() {
         Long userInfoId = 1L;
@@ -109,7 +103,6 @@ class UserInfoControllerUnitTest {
         verify(userInfoService).updateUserById(eq(1L), any(UserInfoDTO.class));
     }
 
-
     @Test
     void GIVEN_moked_existing_user_WHEN_deleteUser_is_called_THEN_OK_status_is_returned() {
         Long userId = 1L;
@@ -118,16 +111,7 @@ class UserInfoControllerUnitTest {
         ResponseEntity<HttpStatus> responseStatus = userController.deleteUser(userId);
 
         assertThat(responseStatus.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(userInfoService,times(WANTED_NUMBER_OF_INVOCATIONS)).delete(userId);
+        verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).delete(userId);
     }
-
-
-
-
-
-
-
-
-
 
 }

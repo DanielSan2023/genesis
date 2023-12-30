@@ -1,9 +1,7 @@
 package com.engeto.genesis.controller;
 
-
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -20,7 +18,6 @@ public class UserController {
     public UserController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }
-
 
     @PostMapping("/user")
     public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
@@ -40,7 +37,6 @@ public class UserController {
         return new ResponseEntity(userInfoById, HttpStatus.OK);
     }
 
-
     @GetMapping("/users")
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         userInfoService.createUser(new UserInfoDTO("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
@@ -56,7 +52,6 @@ public class UserController {
             return new ResponseEntity<>(usersList, HttpStatus.OK);
         }
     }
-
 
     @PutMapping("/user/{id}")
     public ResponseEntity<HttpStatus> updateUserById(@PathVariable("id") Long id, @RequestBody UserInfoDTO updateUserInfoDTO) {

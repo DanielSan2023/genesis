@@ -28,7 +28,6 @@ public class UserInfoDTO {
     @Size(max = 255)
     private String uuid;
 
-
     public UserInfoDTO(String name, String surname, String personId, String uuid) {
         this.name = name;
         this.surname = surname;
