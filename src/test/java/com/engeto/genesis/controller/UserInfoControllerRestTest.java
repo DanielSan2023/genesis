@@ -1,5 +1,6 @@
 package com.engeto.genesis.controller;
 
+
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
@@ -37,6 +38,7 @@ class UserInfoControllerRestTest {
         userInfoRepository.deleteAll();
     }
 
+
     @Test
     void GIVEN_empty_DB_WHEN_get_users_THEN_nothing_is_returned() {
         UserInfo[] userInfo = restTemplate.getForObject(
@@ -47,7 +49,6 @@ class UserInfoControllerRestTest {
 
     @Test
     void greetingShouldReturnDefaultMessage() {
-
         UserInfo[] actual = restTemplate.getForObject(
                 "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
 
@@ -73,7 +74,7 @@ class UserInfoControllerRestTest {
 
         assertThat(userInfoRepository.findAll()).hasSize(1);
     }
-}
+
 
 @Test
 void getUserByIdShouldReturnUserInfo() {

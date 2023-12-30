@@ -1,11 +1,12 @@
 package com.engeto.genesis.controller;
 
-import com.engeto.genesis.domain.UserInfo;
+
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,24 +20,11 @@ public class UserController {
     public UserController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }
-//
-//    @PostMapping("/user")
-//    public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
-//        UserInfo userInfo = new UserInfo();
-//        BeanUtils.copyProperties(userInfoDTO, userInfo);
-//        UserInfo createdUserInfo = userInfoService.createUser(userInfo);
-//
-//        if (createdUserInfo != null) {
-//            BeanUtils.copyProperties(userInfo, userInfoDTO);
-//            return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
-//        }
-//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+
 
     @PostMapping("/user")
     public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO createdUserInfo = userInfoService.createUser(userInfoDTO);
-
         if (createdUserInfo != null) {
             return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
         }
@@ -62,7 +50,7 @@ public class UserController {
         } else {
             usersList = userInfoService.findAllUsers();
         }
-        if (usersList == null || usersList.isEmpty()) {
+        if (CollectionUtils.isEmpty(usersList)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(usersList, HttpStatus.OK);
