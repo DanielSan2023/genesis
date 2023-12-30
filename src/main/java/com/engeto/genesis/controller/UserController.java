@@ -34,12 +34,11 @@ public class UserController {
         if (userInfoById == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(userInfoById, HttpStatus.OK);
+        return new ResponseEntity<>(userInfoById, HttpStatus.OK);
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
-        userInfoService.createUser(new UserInfoDTO("mike", "wazovsky", "123456789123", "someUuid"));   //TODO just for test
         List<UserInfoDTO> usersList;
         if (detail) {
             usersList = userInfoService.findAllUsersDetail();

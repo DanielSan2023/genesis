@@ -1,5 +1,6 @@
 package com.engeto.genesis.repository;
 
+import com.engeto.genesis.domain.UserInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -28,18 +29,62 @@ public class UserInfoRepositoryTest {
 
     @Test
     void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_existing_personId_THEN_true() {
+        //GIVEN
+        assertThat(userInfoRepository.findAll()).isEmpty();
+        String personId = "somePersonId";
+        userInfoRepository.save(new UserInfo("Stefan", "Impulse", personId, "someUuid"));
+        assertThat(userInfoRepository.findAll()).hasSize(1);
+
+        //WHEN
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase(personId);
+
+        //THEN
+        assertThat(exist).isTrue();
     }
 
     @Test
-    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_mon_existing_personId_THEN_false() {
+    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_non_existing_personId_THEN_false() {
+        //GIVEN
+        assertThat(userInfoRepository.findAll()).isEmpty();
+        String personId = "somePersonId";
+        userInfoRepository.save(new UserInfo("Stefan", "Impulse", personId, "someUuid"));
+        assertThat(userInfoRepository.findAll()).hasSize(1);
+
+        //WHEN
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase("nonExistPersonId");
+
+        //THEN
+        assertThat(exist).isFalse();
     }
 
     @Test
     void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_UPPER_CASE_personId_THEN_true() {
+        //GIVEN
+        assertThat(userInfoRepository.findAll()).isEmpty();
+        String personId = "somePersonId";
+        userInfoRepository.save(new UserInfo("Stefan", "Impulse", personId, "someUuid"));
+        assertThat(userInfoRepository.findAll()).hasSize(1);
+
+        //WHEN
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase(personId.toUpperCase());
+
+        //THEN
+        assertThat(exist).isTrue();
     }
 
     @Test
     void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_DOWN_CASE_personId_THEN_true() {
+        //GIVEN
+        assertThat(userInfoRepository.findAll()).isEmpty();
+        String personId = "somePersonId";
+        userInfoRepository.save(new UserInfo("Stefan", "Impulse", personId, "someUuid"));
+        assertThat(userInfoRepository.findAll()).hasSize(1);
+
+        //WHEN
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase(personId.toLowerCase());
+
+        //THEN
+        assertThat(exist).isTrue();
     }
 
 }
