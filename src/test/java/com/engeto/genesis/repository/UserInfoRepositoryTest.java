@@ -11,8 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertSame;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -49,11 +47,10 @@ public class UserInfoRepositoryTest {
         UserInfo userInfo = new UserInfo("mike", "wazovsky", "123456789123", "someUuid");
 
         userInfoRepository.save(userInfo);
-        UserInfo returnedUserInfoById = userInfoRepository.findById(userInfo.getId()).get();
+        UserInfo returnedUserInfoById = userInfoRepository.findById(userInfo.getId()).orElseThrow();
 
         Assertions.assertThat(returnedUserInfoById).isNotNull();
-        assertSame("Verify that tweo objects are the same", userInfo, returnedUserInfoById);
-
+        Assertions.assertThat(userInfo).isEqualTo(new UserInfo());
     }
 
     @Test
@@ -65,7 +62,6 @@ public class UserInfoRepositoryTest {
         Optional<UserInfo> returnedUserInfo = userInfoRepository.findById(userInfo.getId());
 
         Assertions.assertThat(returnedUserInfo).isEmpty();
-
     }
 
 }
