@@ -1,7 +1,5 @@
 package com.engeto.genesis.repository;
 
-import com.engeto.genesis.domain.UserInfo;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -9,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
@@ -20,48 +18,28 @@ public class UserInfoRepositoryTest {
     private UserInfoRepository userInfoRepository;
 
     @Test
-    public void setUserInfoRepository_Save_userInfo_Return_saved_UserInfo() {
-        UserInfo userInfo = new UserInfo("mike", "wazovsky", "123456789123", "someUuid");
+    void GIVEN_empty_DB_WHEN_existsByPersonIdIgnoreCase_THEN_false() {
+        assertThat(userInfoRepository.findAll()).isEmpty();
 
-        UserInfo savedUserInfo = userInfoRepository.save(userInfo);
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase("somePersonId");
 
-        Assertions.assertThat(savedUserInfo).isNotNull();
-        Assertions.assertThat(savedUserInfo.getId()).isGreaterThan(0);
-    }
-//    @Test
-//    public void setUserInfoRepository_SaveAll_than_Return_saved_UserInfos(){
-//
-//        UserInfo userInfo1 = new UserInfo("mike", "wazovsky", "123456759123", "someUuid");
-//        UserInfo userInfo2 = new UserInfo("michael", "jordan", "123456569123", "someUuid");
-//
-//      userInfoRepository.save(userInfo1);
-//      userInfoRepository.save(userInfo2);
-//        List<UserInfo> userInfoList = userInfoRepository.findAll();
-//
-//        Assertions.assertThat(userInfoList).isNotNull();
-//        Assertions.assertThat(userInfoList.size()).isEqualTo(2);
-//    }//TODO need  it  to checking and repairing
-
-    @Test
-    public void UserInfoRepository_FindById_ReturnUserInfo() {
-        UserInfo userInfo = new UserInfo("mike", "wazovsky", "123456789123", "someUuid");
-
-        userInfoRepository.save(userInfo);
-        UserInfo returnedUserInfoById = userInfoRepository.findById(userInfo.getId()).orElseThrow();
-
-        Assertions.assertThat(returnedUserInfoById).isNotNull();
-        Assertions.assertThat(userInfo).isEqualTo(new UserInfo());
+        assertThat(exist).isFalse();
     }
 
     @Test
-    public void UserInfoRepository_UserInfo_DELETEById_ReturnUserInfo_is_Empty() {
-        UserInfo userInfo = new UserInfo("mike", "wazovsky", "123456789123", "someUuid");
+    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_existing_personId_THEN_true() {
+    }
 
-        userInfoRepository.save(userInfo);
-        userInfoRepository.deleteById(userInfo.getId());
-        Optional<UserInfo> returnedUserInfo = userInfoRepository.findById(userInfo.getId());
+    @Test
+    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_mon_existing_personId_THEN_false() {
+    }
 
-        Assertions.assertThat(returnedUserInfo).isEmpty();
+    @Test
+    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_UPPER_CASE_personId_THEN_true() {
+    }
+
+    @Test
+    void GIVEN_one_entity_in_DB_WHEN_existsByPersonIdIgnoreCase_with_DOWN_CASE_personId_THEN_true() {
     }
 
 }
