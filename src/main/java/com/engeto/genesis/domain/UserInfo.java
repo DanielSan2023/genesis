@@ -24,7 +24,7 @@ public class UserInfo {
     @Column
     private String surname;
 
-    @Column(unique = true)
+    @Column(unique = true,length = 12)
     private String personId;
 
     @Column(unique = true)

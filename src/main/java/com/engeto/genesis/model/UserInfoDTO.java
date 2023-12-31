@@ -21,7 +21,7 @@ public class UserInfoDTO {
     private String surname;
 
     @NotNull
-    @Size(max = 255)
+    @Size(max = 12)
     private String personId;
 
     @NotNull

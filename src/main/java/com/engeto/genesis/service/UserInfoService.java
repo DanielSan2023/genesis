@@ -22,7 +22,7 @@ public class UserInfoService {
     public List<UserInfoDTO> findAllUsersDetail() {
         final List<UserInfo> userInfos = userInfoRepository.findAll(Sort.by("id"));
         return userInfos.stream()
-                .map(userInfo -> convertToDTO(userInfo, new UserInfoDTO()))
+                .map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO()))
                 .toList();
     }
 
@@ -33,11 +33,11 @@ public class UserInfoService {
             user.setUuid(null);
         });
         return userInfos.stream()
-                .map(userInfo -> convertToDTO(userInfo, new UserInfoDTO()))
+                .map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO()))
                 .toList();
     }
 
-    UserInfoDTO convertToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
+    UserInfoDTO convertDomainToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
         userInfoDTO.setId(userInfo.getId());
         userInfoDTO.setName(userInfo.getName());
         userInfoDTO.setSurname(userInfo.getSurname());
@@ -46,7 +46,7 @@ public class UserInfoService {
         return userInfoDTO;
     }
 
-    private UserInfo mapToDomain(final UserInfoDTO userInfoDTO) {
+    private UserInfo mapDTOToDomain(final UserInfoDTO userInfoDTO) {
         UserInfo userInfo = new UserInfo();
         userInfo.setId(userInfoDTO.getId());
         userInfo.setName(userInfoDTO.getName());
@@ -54,9 +54,18 @@ public class UserInfoService {
         return userInfo;
     }
 
+    public UserInfoDTO getUserByIdDetail(Long id) {
+        UserInfo userInfoById = userInfoRepository.findById(id).orElse(null);
+        return convertDomainToDTO(userInfoById, new UserInfoDTO());
+    }
+
     public UserInfoDTO getUserById(Long id) {
         UserInfo userInfoById = userInfoRepository.findById(id).orElse(null);
-        return convertToDTO(userInfoById, new UserInfoDTO());
+        if (userInfoById != null) {
+            userInfoById.setUuid(null);
+            userInfoById.setPersonId(null);
+            return convertDomainToDTO(userInfoById, new UserInfoDTO());
+        } else return null;
     }
 
     public UserInfoDTO createUser(UserInfoDTO userInfoDTO) {
@@ -75,13 +84,14 @@ public class UserInfoService {
     }
 
     public void updateUserById(Long id, UserInfoDTO userInfoDTO) {
-        UserInfo convertUserInfo = mapToDomain(userInfoDTO);
-        userInfoRepository.findById(id).ifPresent(existingUserInfo -> {
-            existingUserInfo.setName(convertUserInfo.getName());
-            existingUserInfo.setSurname(convertUserInfo.getSurname());
-            userInfoRepository.save(existingUserInfo);
-        });
+        UserInfo convertUserInfo = mapDTOToDomain(userInfoDTO);
+        UserInfo existUserInfoById = userInfoRepository.findById(id).orElse(null);
 
+        if (existUserInfoById != null) {
+            existUserInfoById.setName(convertUserInfo.getName());
+            existUserInfoById.setSurname(convertUserInfo.getSurname());
+            userInfoRepository.save(existUserInfoById);
+        }
     }
 
     public void delete(Long id) {
