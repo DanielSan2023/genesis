@@ -52,7 +52,7 @@ class UserInfoControllerUnitTest {
         Long userInfoId = 1L;
         when(userInfoService.getUserById(userInfoId)).thenReturn(null);
 
-        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId);
+        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId,false);
 
         assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(returnValue.getBody()).isNull();
@@ -63,7 +63,7 @@ class UserInfoControllerUnitTest {
         Long userInfoId = 1L;
         when(userInfoService.getUserById(userInfoId)).thenReturn(new UserInfoDTO());
 
-        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId);
+        ResponseEntity<UserInfoDTO> returnValue = userController.getUserById(userInfoId,false);
 
         assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(returnValue.getBody()).isNotNull();

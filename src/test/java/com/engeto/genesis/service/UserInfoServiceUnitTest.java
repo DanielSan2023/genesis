@@ -87,7 +87,7 @@ public class UserInfoServiceUnitTest {
         verify(userInfoRepository).findAll(Sort.by("id"));
 
         assertEquals(EXPECTED_NUMBER_OF_SIZE, resultList.size());
-        verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).convertToDTO(any(UserInfo.class), any(UserInfoDTO.class));
+        verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).convertDomainToDTO(any(UserInfo.class), any(UserInfoDTO.class));
     }
 
 }

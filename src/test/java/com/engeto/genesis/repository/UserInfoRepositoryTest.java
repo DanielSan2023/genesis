@@ -87,4 +87,21 @@ public class UserInfoRepositoryTest {
         assertThat(exist).isTrue();
     }
 
+    @Test
+    void GIVEN_tree_entities_in_DB_WHEN_existsByPersonIdIgnoreCase_with_existing_personId_THEN_true() {
+        // GIVEN
+        assertThat(userInfoRepository.findAll()).isEmpty();
+        String personId = "123456989951";
+        userInfoRepository.save(new UserInfo("Jack", "Sparow", "123456789654", "someUuid"));
+        userInfoRepository.save(new UserInfo("John", "Doe",personId , "someUuid2"));
+        userInfoRepository.save(new UserInfo("Alice", "Wonderland", "123654789951", "someUuid3"));
+        assertThat(userInfoRepository.findAll()).hasSize(3);
+
+        // WHEN
+        boolean exist = userInfoRepository.existsByPersonIdIgnoreCase(personId);
+
+        // THEN
+        assertThat(exist).isTrue();
+    }
+
 }
