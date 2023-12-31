@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -29,12 +31,18 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}") //TODO make user detail
-    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id) {
-        UserInfoDTO userInfoById = userInfoService.getUserById(id);
+    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id,@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
+        UserInfoDTO userInfoById;
+        if (detail) {
+            userInfoById = userInfoService.getUserByIdDetail(id);
+        } else {
+            userInfoById = userInfoService.getUserById(id);
+        }
         if (userInfoById == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(userInfoById, HttpStatus.OK);
         }
-        return new ResponseEntity<>(userInfoById, HttpStatus.OK);
     }
 
     @GetMapping("/users")
