@@ -8,6 +8,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -107,4 +110,62 @@ public class UserInfoRepositoryTest {
         assertThat(exist).isTrue();
     }
 
+    @Test
+    void GIVEN_userInfo_entity_to_DB_WHEN_save_user_THEN_return_saved_user() {
+        //GIVEN
+        UserInfo newUser = new UserInfo("Jack", "Johnson", "321654987951", "someUuid");
+        userInfoRepository.save(newUser);
+
+        // WHEN
+        UserInfo savedUser = userInfoRepository.save(newUser);
+
+        // THEN
+        assertThat(savedUser).isNotNull();
+        assertThat(savedUser.getId()).isGreaterThan(0);
+    }
+
+    @Test
+    void GIVEN_userInfoList_WHEN_findAll_users_THEN_return_userInfoList() {
+        //GIVEN
+        userInfoRepository.save(new UserInfo("Jack", "Sparow", "123456789654", "someUuid"));
+        userInfoRepository.save(new UserInfo("John", "Doe", "123654789951", "someUuid2"));
+
+        //WHEN
+        List<UserInfo> usersList = userInfoRepository.findAll();
+
+        //THEN
+        assertThat(usersList).isNotNull();
+        assertThat(usersList.size()).isEqualTo(2);
+    }
+
+    @Test
+    void GIVEN_userInfo_object_WHEN_update_userInfo_THEN_return_updated_userInfo() {
+        //GIVEN
+        UserInfo newUser = new UserInfo("Jack", "Johnson", "321654987951", "someUuid");
+        userInfoRepository.save(newUser);
+
+        //WHEN
+        UserInfo savedUser = userInfoRepository.findById(newUser.getId()).get();
+        savedUser.setName("Richie");
+        savedUser.setSurname("Rich");
+        UserInfo updatedUser = userInfoRepository.save(savedUser);
+
+        //THEN
+        assertThat(updatedUser.getName()).isEqualTo("Richie");
+        assertThat(updatedUser.getSurname()).isEqualTo("Rich");
+    }
+
+    @Test
+    void GIVEN_userInfo_object_WHEN_delete_userInfo_THEN_remove_userInfo() {
+        //GIVEN
+        UserInfo newUser = new UserInfo("Jack", "Johnson", "321654987951", "someUuid");
+        userInfoRepository.save(newUser);
+
+        //WHEN
+        userInfoRepository.deleteById(newUser.getId());
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(newUser.getId());
+
+        //THEN
+        assertThat(userInfoOptional).isEmpty();
+    }
 }

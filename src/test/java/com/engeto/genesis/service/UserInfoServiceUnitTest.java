@@ -67,7 +67,7 @@ public class UserInfoServiceUnitTest {
 
     //TODO add test for testing MAX_LENGTH_PERSON_ID
     @Test
-    public void test_Max_Length_Person_Id_With_Correct_Id_Length() {
+    public void test_max_Length_Person_Id_with_correct_Id_Length() {
         int expectedMaxLength = 12;
 
         int actualMaxLength = UserInfoService.MAX_LENGTH_PERSON_ID;
@@ -77,10 +77,12 @@ public class UserInfoServiceUnitTest {
 
     @Test
     public void testFindAllUsersDetail() {
+        //GIVEN
         UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
         UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
         List<UserInfo> mockUserInfos = Arrays.asList(userInfo1, userInfo2);
 
+        //WHEN
         when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
         List<UserInfoDTO> resultList = userInfoService.findAllUsersDetail();
 
