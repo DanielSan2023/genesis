@@ -20,10 +20,13 @@ public class UserInfoRepositoryTest {
 
     @Test
     void GIVEN_empty_DB_WHEN_existsByPersonIdIgnoreCase_THEN_false() {
+        //GIVEN
         assertThat(userInfoRepository.findAll()).isEmpty();
 
+        //WHEN
         boolean exist = userInfoRepository.existsByPersonIdIgnoreCase("somePersonId");
 
+        //THEN
         assertThat(exist).isFalse();
     }
 
@@ -93,7 +96,7 @@ public class UserInfoRepositoryTest {
         assertThat(userInfoRepository.findAll()).isEmpty();
         String personId = "123456989951";
         userInfoRepository.save(new UserInfo("Jack", "Sparow", "123456789654", "someUuid"));
-        userInfoRepository.save(new UserInfo("John", "Doe",personId , "someUuid2"));
+        userInfoRepository.save(new UserInfo("John", "Doe", personId, "someUuid2"));
         userInfoRepository.save(new UserInfo("Alice", "Wonderland", "123654789951", "someUuid3"));
         assertThat(userInfoRepository.findAll()).hasSize(3);
 

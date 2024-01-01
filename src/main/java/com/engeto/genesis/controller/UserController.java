@@ -30,7 +30,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/user/{id}") //TODO make user detail
+    @GetMapping("/user/{id}")
     public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id,@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         UserInfoDTO userInfoById;
         if (detail) {
@@ -62,7 +62,7 @@ public class UserController {
 
     @PutMapping("/user/{id}")
     public ResponseEntity<HttpStatus> updateUserById(@PathVariable("id") Long id, @RequestBody UserInfoDTO updateUserInfoDTO) {
-        if (userInfoService.getUserById(id) != null) {
+        if (userInfoService.getUserByIdDetail(id) != null) {
             userInfoService.updateUserById(id, updateUserInfoDTO);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
