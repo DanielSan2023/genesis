@@ -2,6 +2,7 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -9,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -24,14 +24,11 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO createdUserInfo = userInfoService.createUser(userInfoDTO);
-        if (createdUserInfo != null) {
-            return new ResponseEntity<>(userInfoDTO, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(createdUserInfo, HttpStatus.CREATED);
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id,@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
+    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable Long id, @RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         UserInfoDTO userInfoById;
         if (detail) {
             userInfoById = userInfoService.getUserByIdDetail(id);

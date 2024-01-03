@@ -14,6 +14,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.LinkedHashMap;
+import java.util.Objects;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
 
@@ -43,7 +46,43 @@ class UserInfoControllerRestTest {
     }
 
     @Test
-    void greetingShouldReturnDefaultMessage() {
+    void GIVEN_empty_DB_WHEN_get_users_without_detail_THEN_nothing_is_returned() {
+        UserInfo[] userInfo = restTemplate.getForObject(
+                "http://localhost:" + port + "/api/v1/users?detail=false", UserInfo[].class);
+
+        assertThat(userInfo).isNullOrEmpty();
+    }
+
+    @Test
+    void GIVEN_user_with_incorrect_personId_WHEN_createUser_endpoint_THEN_get_users_return_null() {
+        //GIVEN
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("mike")
+                .surname("wazovsky")
+                .personId("123456") //to short
+                .build();
+
+        //WHEN
+        ResponseEntity<Object> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        LinkedHashMap<String, String> responseBody = (LinkedHashMap) response.getBody();    //TODO find better solution
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.get("message"))
+                .isEqualTo("PersonId length doesn't match. It needs to have exactly: 12 characters");
+
+        //THEN
+        UserInfo[] actual = restTemplate.getForObject(
+                "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
+
+        assertThat(actual).isNull();
+    }
+
+    @Test
+    void GIVEN_saved_correct_user_info_dto_in_db_WHEN_get_user_detail_endpoint_THEN_saved_user_is_returned_and_checked() {
         //GIVEN
         UserInfoDTO userInfoDTO = UserInfoDTO.builder()
                 .name("mike")
@@ -52,14 +91,14 @@ class UserInfoControllerRestTest {
                 .build();
         ResponseEntity<UserInfoDTO> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
-        Long userInfoId  = response.getBody().getId();
+        Long userInfoId = Objects.requireNonNull(response.getBody()).getId();
 
         //WHEN
         UserInfo[] actual = restTemplate.getForObject(
                 "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
 
         //THEN
-        assertThat(actual).isNotEmpty();
+        assertThat(actual).isNotEmpty().hasSize(1);
         assertThat(actual[0].getId()).isEqualTo(userInfoId);
         assertThat(actual[0].getName()).isEqualTo("mike");
         assertThat(actual[0].getSurname()).isEqualTo("wazovsky");
@@ -81,6 +120,7 @@ class UserInfoControllerRestTest {
                 "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
 
         //THEN
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getSurname()).isEqualTo(userInfoDTO.getSurname());
         assertThat(response.getBody().getPersonId()).isEqualTo(userInfoDTO.getPersonId());
         assertThat(userInfoRepository.findAll()).hasSize(1);
@@ -89,7 +129,6 @@ class UserInfoControllerRestTest {
     @Test
     void getUserByIdShouldReturnUserInfo() {
         //GIVEN
-        Long userId = 1L;
         UserInfo userInfo = userInfoRepository.save(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
 
         //WHEN
@@ -122,12 +161,14 @@ class UserInfoControllerRestTest {
                 HttpStatus.class, userId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        //TODO check if name are updated
     }
 
     @Test
     void deleteUserShouldReturnOkStatus() {
         //GIVEN
-        Long userId = 1L;
+        Long userId = 100000L;
+        //TODO do we really have user in DB ?
 
         //WHEN
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -135,6 +176,7 @@ class UserInfoControllerRestTest {
 
         //THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        //TODO is that user really deleted ?
     }
 
 }

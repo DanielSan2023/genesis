@@ -74,12 +74,19 @@ public class UserInfoService {
 
         UUID uuid = UUID.randomUUID();
         userInfo.setUuid(String.valueOf(uuid));
-        String personId = userInfo.getPersonId();
-        if (personId.length() == MAX_LENGTH_PERSON_ID && !(userInfoRepository.existsByPersonIdIgnoreCase(personId))) {
-            BeanUtils.copyProperties(userInfoRepository.save(userInfo), userInfoDTO);
-            return userInfoDTO;
-        } else {
-            return null;
+
+        validateNewPerson(userInfo.getPersonId());
+
+        BeanUtils.copyProperties(userInfoRepository.save(userInfo), userInfoDTO);
+        return userInfoDTO;
+    }
+
+    private void validateNewPerson(String personId) {
+        if (personId.length() != MAX_LENGTH_PERSON_ID) {
+            throw new RuntimeException("PersonId length doesn't match. It needs to have exactly: " + MAX_LENGTH_PERSON_ID + " characters");
+        }
+        if (userInfoRepository.existsByPersonIdIgnoreCase(personId)) {
+            throw new RuntimeException("PersonId: " + personId + " already exists");
         }
     }
 
