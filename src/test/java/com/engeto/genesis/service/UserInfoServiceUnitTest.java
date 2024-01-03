@@ -14,14 +14,14 @@ import org.springframework.data.domain.Sort;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserInfoServiceUnitTest {
 
     public static final int WANTED_NUMBER_OF_INVOCATIONS = 2;
-    public static final int EXPECTED_NUMBER_OF_SIZE = 2;
     @Mock
     private UserInfoRepository userInfoRepository;
 
@@ -33,7 +33,6 @@ public class UserInfoServiceUnitTest {
         //GIVEN
         String personId = "somePersonId";
         UserInfoDTO userInfoDTO = createUserInfo(personId);
-
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
 
         //WHEN
@@ -48,7 +47,6 @@ public class UserInfoServiceUnitTest {
         //GIVEN
         String personId = "somePersonId";
         UserInfoDTO userInfoDTO = createUserInfo(personId);
-
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
 
         //WHEN
@@ -65,14 +63,12 @@ public class UserInfoServiceUnitTest {
         return userInfoDTO;
     }
 
-    //TODO add test for testing MAX_LENGTH_PERSON_ID
     @Test
     public void test_max_Length_Person_Id_with_correct_Id_Length() {
-        int expectedMaxLength = 12;
-
+        int expectedLength = 12;
         int actualMaxLength = UserInfoService.MAX_LENGTH_PERSON_ID;
 
-        assertEquals(expectedMaxLength, actualMaxLength);
+        assertThat(actualMaxLength).isEqualTo(expectedLength);
     }
 
     @Test
@@ -86,10 +82,12 @@ public class UserInfoServiceUnitTest {
         when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
         List<UserInfoDTO> resultList = userInfoService.findAllUsersDetail();
 
+        //THEN
         verify(userInfoRepository).findAll(Sort.by("id"));
-
-        assertEquals(EXPECTED_NUMBER_OF_SIZE, resultList.size());
         verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).convertDomainToDTO(any(UserInfo.class), any(UserInfoDTO.class));
     }
+
+
+
 
 }

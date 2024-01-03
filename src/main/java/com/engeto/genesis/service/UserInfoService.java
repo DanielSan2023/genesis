@@ -85,11 +85,12 @@ public class UserInfoService {
 
     public void updateUserById(Long id, UserInfoDTO userInfoDTO) {
         UserInfo convertUserInfo = mapDTOToDomain(userInfoDTO);
-        userInfoRepository.findById(id).ifPresent(existingUserInfo -> {
-            existingUserInfo.setName(convertUserInfo.getName());
-            existingUserInfo.setSurname(convertUserInfo.getSurname());
-            userInfoRepository.save(existingUserInfo);
-        });
+        userInfoRepository.findById(id).ifPresent(
+                existingUserInfo -> {
+                    existingUserInfo.setName(convertUserInfo.getName());
+                    existingUserInfo.setSurname(convertUserInfo.getSurname());
+                    userInfoRepository.save(existingUserInfo);
+                });
 
     }
 
