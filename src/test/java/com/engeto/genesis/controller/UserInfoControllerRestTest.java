@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.PUT;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserInfoControllerRestTest {
@@ -41,12 +43,24 @@ class UserInfoControllerRestTest {
     }
 
     @Test
-    void greetingShouldReturnDefaultMessage() {    //TODO adjust
+    void greetingShouldReturnDefaultMessage() {
+        //GIVEN
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("mike")
+                .surname("wazovsky")
+                .personId("123456789123")
+                .build();
+        ResponseEntity<UserInfoDTO> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
+        Long userInfoId  = response.getBody().getId();
+
+        //WHEN
         UserInfo[] actual = restTemplate.getForObject(
                 "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
 
+        //THEN
         assertThat(actual).isNotEmpty();
-        assertThat(actual[0].getId()).isEqualTo(1);
+        assertThat(actual[0].getId()).isEqualTo(userInfoId);
         assertThat(actual[0].getName()).isEqualTo("mike");
         assertThat(actual[0].getSurname()).isEqualTo("wazovsky");
         assertThat(actual[0].getPersonId()).isEqualTo("123456789123");
@@ -88,20 +102,27 @@ class UserInfoControllerRestTest {
         assertThat(response.getBody().getId()).isEqualTo(userInfo.getId());
     }
 
-    //    @Test
-//    void updateUserByIdShouldReturnOkStatus() { //TODO make update Test
-//        Long userId = 1L;
-//
-//        UserInfoDTO updateUserInfoDTO = new UserInfoDTO();
-//        updateUserInfoDTO.setName("UpdatedName");
-//
-//        ResponseEntity<HttpStatus> response = restTemplate.exchange(
-//                "http://localhost:" + port + "/api/v1/user/{id}", PUT, new HttpEntity<>(updateUserInfoDTO),
-//                HttpStatus.class, userId);
-//
-//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//    }
+    @Test
+    void updateUserByIdShouldReturnOkStatus() { //TODO make update Test
+        //GIVEN
+        Long userId = 1L;
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("John")
+                .surname("Doe")
+                .personId("123456789321")
+                .build();
+        UserInfoDTO updateUserInfoDTO = new UserInfoDTO();
+        updateUserInfoDTO.setName("UpdatedName");
+        restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
+
+        //WHEN
+        ResponseEntity<HttpStatus> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/v1/user/{id}", PUT, new HttpEntity<>(updateUserInfoDTO),
+                HttpStatus.class, userId);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
     @Test
     void deleteUserShouldReturnOkStatus() {

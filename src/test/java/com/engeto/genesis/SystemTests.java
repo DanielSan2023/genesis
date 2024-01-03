@@ -1,4 +1,4 @@
-package com.engeto.genesis.controller;
+package com.engeto.genesis;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
