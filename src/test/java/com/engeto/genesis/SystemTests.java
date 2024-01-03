@@ -32,6 +32,16 @@ public class SystemTests {
     }
 
     @Test
+    void GIVEN_empty_DB_WHEN__THEN_() {
+//        createUser
+//        getUserById
+//        updateUserById
+//        getAll  //with details
+//        deleteUser
+//        getAll  //without details
+    }
+
+    @Test
     public void testCreateReadDelete() {
         UserInfoDTO oneUserInfoDTO = new UserInfoDTO("Jack", "Johnson", "654321987456", "someUuid");
         ResponseEntity<UserInfoDTO> createdUserInfoDTO = restTemplate.postForEntity("http://localhost:" + port + "/api/v1/user", oneUserInfoDTO, UserInfoDTO.class);

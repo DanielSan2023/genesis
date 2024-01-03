@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -172,27 +171,27 @@ class UserInfoControllerUnitTest {
         //GIVEN
         Long userInfoId = 1L;
         UserInfoDTO existUserInfoDTO = new UserInfoDTO();
-        when(userInfoService.getUserById(userInfoId)).thenReturn(existUserInfoDTO);
+        when(userInfoService.getUserByIdDetail(userInfoId)).thenReturn(existUserInfoDTO);
 
         //WHEN
         ResponseEntity<HttpStatus> responseEntity = userController.updateUserById(userInfoId, new UserInfoDTO());
 
         //THEN
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }//TODO adjust
+    }
 
     @Test
     void GIVEN_mocked_existing_user_WHEN_updateUserById_is_called_THEN_NOT_FOUND_status_is_returned() {
         //GIVEN
         Long userInfoId = 1L;
-        when(userInfoService.getUserById(userInfoId)).thenReturn(null);
+        when(userInfoService.getUserByIdDetail(userInfoId)).thenReturn(null);
 
         //WHEN
         ResponseEntity<HttpStatus> responseEntity = userController.updateUserById(userInfoId, null);
 
         //THEN
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }//TODO adjust
+    }
 
     @Test
     void GIVEN_mocked_existing_user_WHEN_deleteUser_is_called_THEN_OK_status_is_returned() {
