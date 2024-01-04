@@ -164,7 +164,7 @@ class UserInfoControllerRestTest {
                 HttpStatus.class, userId);
 
         Optional<UserInfo> UserOptional = userInfoRepository.findById(userId);
-        UserInfo userInfoDTOFromDB = UserOptional.orElse(null);
+        UserInfo userInfoDTOFromDB = UserOptional.orElseThrow();
 
         //THEN
         assertThat(userInfoRepository.findById(userId)).isPresent();
