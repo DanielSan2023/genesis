@@ -3,15 +3,20 @@ package com.engeto.genesis.service;
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-
+@Slf4j
 @Service
 public class UserInfoService {
+    private static final Logger logger = LoggerFactory.getLogger(UserInfoService.class);
+
     public static final int MAX_LENGTH_PERSON_ID = 12;
     private final UserInfoRepository userInfoRepository;
 
@@ -81,12 +86,16 @@ public class UserInfoService {
         return userInfoDTO;
     }
 
-    private void validateNewPerson(String personId) {
+    public void validateNewPerson(String personId) {
         if (personId.length() != MAX_LENGTH_PERSON_ID) {
-            throw new RuntimeException("PersonId length doesn't match. It needs to have exactly: " + MAX_LENGTH_PERSON_ID + " characters");
+            String errorMessage = "PersonId length doesn't match. It needs to have exactly: " + MAX_LENGTH_PERSON_ID + " characters";
+            logger.error(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
         if (userInfoRepository.existsByPersonIdIgnoreCase(personId)) {
-            throw new RuntimeException("PersonId: " + personId + " already exists");
+            String errorMessage = "PersonId: " + personId + " already exists";
+            logger.error(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
     }
 

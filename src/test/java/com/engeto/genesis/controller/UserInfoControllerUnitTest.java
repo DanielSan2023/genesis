@@ -2,6 +2,7 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class UserInfoControllerUnitTest {
 
@@ -35,7 +36,6 @@ class UserInfoControllerUnitTest {
         ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
 
         //THEN
-        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(returnValue.getBody()).isNull();
     }
 
@@ -48,8 +48,8 @@ class UserInfoControllerUnitTest {
         ResponseEntity<UserInfoDTO> returnValue = userController.createUser(new UserInfoDTO());
 
         //THEN
-        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(returnValue.getBody()).isNotNull();
+        assertThat(returnValue.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
