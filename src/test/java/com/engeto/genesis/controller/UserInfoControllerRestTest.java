@@ -174,6 +174,27 @@ class UserInfoControllerRestTest {
     }
 
     @Test
+    void GIVEN_user_info_dto_with_incorrect_Id_WHEN_update_user_by_Id_THEN_return_NOT_FOUND_status() {
+        //GIVEN
+        Long incorrectId = 356L;
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("John")
+                .surname("Doe")
+                .personId("123256789321")
+                .build();
+
+        restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
+
+        //WHEN
+        ResponseEntity<HttpStatus> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/api/v1/user/{id}", HttpStatus.class, incorrectId);
+        //THEN
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(userInfoRepository.findById(incorrectId)).isEmpty();
+    }
+
+    @Test
     void GIVEN_saved_correct_user_info_dto_to_DB_WHEN_delete_user_info_by_Id_THEN_checked_user_info_dto_by_Id_is_removed_from_DB_return_Ok_Status() {
         //GIVEN
         UserInfoDTO userInfoDTO = UserInfoDTO.builder()

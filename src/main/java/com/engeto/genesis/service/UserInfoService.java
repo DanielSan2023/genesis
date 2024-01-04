@@ -98,7 +98,6 @@ public class UserInfoService {
                     existingUserInfo.setSurname(convertUserInfo.getSurname());
                     userInfoRepository.save(existingUserInfo);
                 });
-
     }
 
     public void delete(Long id) {
