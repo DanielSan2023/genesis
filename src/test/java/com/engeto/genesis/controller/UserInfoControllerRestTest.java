@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.LinkedHashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
@@ -107,7 +108,7 @@ class UserInfoControllerRestTest {
     }
 
     @Test
-    void createUserShouldReturnCreatedStatus() {
+    void GIVEN_user_info_dto_WHEN_saved_user_info_to_DB_THEN_saved_user_info_returned_checked() {
         //GIVEN
         UserInfoDTO userInfoDTO = UserInfoDTO.builder()
                 .name("John")
@@ -127,7 +128,7 @@ class UserInfoControllerRestTest {
     }
 
     @Test
-    void getUserByIdShouldReturnUserInfo() {
+    void GIVEN_user_info_dto_WHEN_get_user_info_by_id_from_DB_THEN_checked_if_found_return_OK_Status() {
         //GIVEN
         UserInfo userInfo = userInfoRepository.save(new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
 
@@ -142,41 +143,56 @@ class UserInfoControllerRestTest {
     }
 
     @Test
-    void updateUserByIdShouldReturnOkStatus() { //TODO make update Test
+    void GIVEN_saved_user_info_dto_to_DB_WHEN_update_user_by_Id_THEN_checked_user_info_DB_return_Ok_Status() {
         //GIVEN
-        Long userId = 1L;
         UserInfoDTO userInfoDTO = UserInfoDTO.builder()
                 .name("John")
                 .surname("Doe")
-                .personId("123456789321")
+                .personId("123256789321")
                 .build();
         UserInfoDTO updateUserInfoDTO = new UserInfoDTO();
         updateUserInfoDTO.setName("UpdatedName");
-        restTemplate.postForEntity(
+        updateUserInfoDTO.setSurname("UpdatedSurName");
+
+        ResponseEntity<UserInfoDTO> savedUserInfoDTO = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
+        Long userId = Objects.requireNonNull(savedUserInfoDTO.getBody()).getId();
 
         //WHEN
         ResponseEntity<HttpStatus> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/v1/user/{id}", PUT, new HttpEntity<>(updateUserInfoDTO),
                 HttpStatus.class, userId);
 
+        Optional<UserInfo> UserOptional = userInfoRepository.findById(userId);
+        UserInfo userInfoDTOFromDB = UserOptional.orElse(null);
+
+        //THEN
+        assertThat(userInfoRepository.findById(userId)).isPresent();
+        assertThat(Objects.requireNonNull(userInfoDTOFromDB).getName()).isEqualTo("UpdatedName");
+        assertThat(userInfoDTOFromDB.getSurname()).isEqualTo("UpdatedSurName");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        //TODO check if name are updated
     }
 
     @Test
-    void deleteUserShouldReturnOkStatus() {
+    void GIVEN_saved_correct_user_info_dto_to_DB_WHEN_delete_user_info_by_Id_THEN_checked_user_info_dto_by_Id_is_removed_from_DB_return_Ok_Status() {
         //GIVEN
-        Long userId = 100000L;
-        //TODO do we really have user in DB ?
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                .name("John")
+                .surname("Doe")
+                .personId("123456785321")
+                .build();
+
+        ResponseEntity<UserInfoDTO> savedUserInfoDTO = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, UserInfoDTO.class);
+        assertThat(userInfoRepository.findById(Objects.requireNonNull(savedUserInfoDTO.getBody()).getId())).isNotNull();
 
         //WHEN
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/v1/user/{id}", HttpMethod.DELETE, null, Void.class, userId);
+        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:" + port + "/api/v1/user/{id}", HttpMethod.DELETE,
+                null, Void.class, Objects.requireNonNull(savedUserInfoDTO.getBody()).getId());
 
         //THEN
+        assertThat(userInfoRepository.findById(savedUserInfoDTO.getBody().getId())).isNotPresent();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        //TODO is that user really deleted ?
     }
 
 }
