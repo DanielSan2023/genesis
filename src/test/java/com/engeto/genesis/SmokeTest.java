@@ -13,7 +13,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -97,13 +96,11 @@ public class SmokeTest {
 
     @Test
     public void testErrorHandlingReturnsBadRequest() {
-        String url = "http://localhost:" + port + "/wrong";
+        String incorrectURL = "http://localhost:" + port + "/wrong";
 
-        try {
-            restTemplate.getForEntity(url, String.class);
-        } catch (HttpClientErrorException e) {
-            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        }
+        ResponseEntity<String> response = restTemplate.getForEntity(incorrectURL, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
 }

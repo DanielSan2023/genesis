@@ -54,6 +54,7 @@ class UserInfoControllerRestTest {
         assertThat(userInfo).isNullOrEmpty();
     }
 
+    @SuppressWarnings("all")
     @Test
     void GIVEN_user_with_incorrect_personId_WHEN_createUser_endpoint_THEN_get_users_return_null() {
         //GIVEN
@@ -64,18 +65,19 @@ class UserInfoControllerRestTest {
                 .build();
 
         //WHEN
-        ResponseEntity<Object> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/user", userInfoDTO, Object.class);
+        ResponseEntity<LinkedHashMap> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/user", userInfoDTO, LinkedHashMap.class);
 
+        //THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        LinkedHashMap<String, String> responseBody = (LinkedHashMap) response.getBody();    //TODO find better solution
-
+        LinkedHashMap<String, Object> responseBody = response.getBody();
         assertThat(responseBody).isNotNull();
         assertThat(responseBody.get("message"))
                 .isEqualTo("PersonId length doesn't match. It needs to have exactly: 12 characters");
+        assertThat(responseBody.get("status"))
+                .isEqualTo(500);
 
-        //THEN
         UserInfo[] actual = restTemplate.getForObject(
                 "http://localhost:" + port + "/api/v1/users?detail=true", UserInfo[].class);
 
