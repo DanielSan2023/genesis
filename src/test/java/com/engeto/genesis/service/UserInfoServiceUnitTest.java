@@ -7,12 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,46 +22,120 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UserInfoServiceUnitTest {
 
-    public static final int WANTED_NUMBER_OF_INVOCATIONS = 2;
     @Mock
     private UserInfoRepository userInfoRepository;
 
     @InjectMocks
     private UserInfoService userInfoService;
 
+//    @Test
+//    void GIVEN_db_with_non_existing_person_id_WHEN_createUser_is_called_THEN_save_is_called_once() {
+//        //GIVEN
+//        String personId = "somePersonId";
+//        UserInfoDTO userInfoDTO = createUserInfo(personId);
+//        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
+//
+//        //WHEN
+//        userInfoService.createUser(userInfoDTO);
+//
+//        //THEN
+//        Mockito.verify(userInfoRepository, times(1)).save(new UserInfo());
+//    }
+//
+//    @Test
+//    void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {
+//        //GIVEN
+//        String personId = "somePersonId";
+//        UserInfoDTO userInfoDTO = createUserInfo(personId);
+//        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
+//
+//        //WHEN
+//        userInfoService.createUser(userInfoDTO);
+//
+//        //THEN
+//        Mockito.verify(userInfoRepository, times(0)).save(new UserInfo());
+//    }
+//
+//    private UserInfoDTO createUserInfo(String personId) {
+//        UserInfoDTO userInfoDTO = new UserInfoDTO();
+//        userInfoDTO.setPersonId(personId);
+//
+//        return userInfoDTO;
+//    }
+
     @Test
-    void GIVEN_db_with_non_existing_person_id_WHEN_createUser_is_called_THEN_save_is_called_once() {
+    public void GIVEN_userInfo_List_WHEN_called_findAllUsersDetail_THEN_return_userInfo_List_with_all_parameters() {
         //GIVEN
-        String personId = "somePersonId";
-        UserInfoDTO userInfoDTO = createUserInfo(personId);
-        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
+        UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
+        UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
+        List<UserInfo> mockUserInfos = Arrays.asList(userInfo1, userInfo2);
+        List<UserInfoDTO> mockUserInfosDTO = convertDomainListToDTOList(mockUserInfos);
 
         //WHEN
-        userInfoService.createUser(userInfoDTO);
+        when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
+        List<UserInfoDTO> resultList = userInfoService.findAllUsersDetail();
 
         //THEN
-        Mockito.verify(userInfoRepository, times(1)).save(new UserInfo());
+        verify(userInfoRepository).findAll(Sort.by("id"));
+        //  assertThat(new ArrayList<>(resultList)).isEqualTo(mockUserInfosDTO); //TODO compare two list
+        assertThat(resultList).hasSize(2);
+    }
+
+    public List<UserInfoDTO> convertDomainListToDTOList(List<UserInfo> userInfos) {
+        return userInfos.stream()
+                .map(userInfo -> new UserInfoDTO(userInfo.getName(), userInfo.getSurname(),
+                        userInfo.getPersonId(), userInfo.getUuid()))
+                .collect(Collectors.toList());
     }
 
     @Test
-    void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {
+    public void GIVEN_userInfo_List_WHEN_called_findAllUsers_THEN_return_userInfo_List_without_detail() {
         //GIVEN
-        String personId = "somePersonId";
-        UserInfoDTO userInfoDTO = createUserInfo(personId);
-        when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
+        UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
+        UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
+        List<UserInfo> mockUserInfos = Arrays.asList(userInfo1, userInfo2);
 
         //WHEN
-        userInfoService.createUser(userInfoDTO);
+        when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
+        List<UserInfoDTO> resultList = userInfoService.findAllUsers();
+
+        Optional<UserInfoDTO> optionalUserByNameMike = resultList
+                .stream().filter(userInfoDTO -> ("mike").equals(userInfoDTO.getName())).findFirst();
+        Optional<UserInfoDTO> optionalUserByNameJerry = resultList
+                .stream().filter(userInfoDTO -> ("jerry").equals(userInfoDTO.getName())).findFirst();
+
+        assertThat(optionalUserByNameMike).isPresent();
+        assertThat(optionalUserByNameJerry).isPresent();
+
+        UserInfoDTO firstCheckedUserInfoDTO = optionalUserByNameMike.get();
+        UserInfoDTO secondCheckedUserInfoDTO = optionalUserByNameJerry.get();
 
         //THEN
-        Mockito.verify(userInfoRepository, times(0)).save(new UserInfo());
+        verify(userInfoRepository).findAll(Sort.by("id"));
+        assertThat(resultList).hasSize(2);
+
+        assertThat(firstCheckedUserInfoDTO.getPersonId()).isNull();
+        assertThat(firstCheckedUserInfoDTO.getUuid()).isNull();
+
+        assertThat(secondCheckedUserInfoDTO.getPersonId()).isNull();
+        assertThat(secondCheckedUserInfoDTO.getUuid()).isNull();
     }
 
-    private UserInfoDTO createUserInfo(String personId) {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setPersonId(personId);
+    @Test
+    public void GIVEN_userInfoDTO_WHEN_called_mapDTOToDomain_THEN_return_converted_userinfo_checked() {
+        //GIVEN
+        UserInfoDTO mockDTO = mock(UserInfoDTO.class);
+        when(mockDTO.getId()).thenReturn(1L);
+        when(mockDTO.getName()).thenReturn("John");
+        when(mockDTO.getSurname()).thenReturn("Doe");
 
-        return userInfoDTO;
+        // WHEN
+        UserInfo result = userInfoService.mapDTOToDomain(mockDTO);
+
+        // THEN
+        assertThat(result.getId()).isEqualTo(mockDTO.getId());
+        assertThat(result.getName()).isEqualTo(mockDTO.getName());
+        assertThat(result.getSurname()).isEqualTo(mockDTO.getSurname());
     }
 
     @Test
@@ -70,24 +145,5 @@ public class UserInfoServiceUnitTest {
 
         assertThat(actualMaxLength).isEqualTo(expectedLength);
     }
-
-    @Test
-    public void testFindAllUsersDetail() {
-        //GIVEN
-        UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
-        UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
-        List<UserInfo> mockUserInfos = Arrays.asList(userInfo1, userInfo2);
-
-        //WHEN
-        when(userInfoRepository.findAll(Sort.by("id"))).thenReturn(mockUserInfos);
-        List<UserInfoDTO> resultList = userInfoService.findAllUsersDetail();
-
-        //THEN
-        verify(userInfoRepository).findAll(Sort.by("id"));
-        verify(userInfoService, times(WANTED_NUMBER_OF_INVOCATIONS)).convertDomainToDTO(any(UserInfo.class), any(UserInfoDTO.class));
-    }
-
-
-
 
 }

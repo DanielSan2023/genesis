@@ -135,7 +135,7 @@ public class UserInfoRepositoryTest {
 
         //THEN
         assertThat(usersList).isNotNull();
-        assertThat(usersList.size()).isEqualTo(2);
+        assertThat(usersList).hasSize(2);
     }
 
     @Test

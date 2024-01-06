@@ -51,7 +51,7 @@ public class UserInfoService {
         return userInfoDTO;
     }
 
-    private UserInfo mapDTOToDomain(final UserInfoDTO userInfoDTO) {
+    UserInfo mapDTOToDomain(final UserInfoDTO userInfoDTO) {
         UserInfo userInfo = new UserInfo();
         userInfo.setId(userInfoDTO.getId());
         userInfo.setName(userInfoDTO.getName());
