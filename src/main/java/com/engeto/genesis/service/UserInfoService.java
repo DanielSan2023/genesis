@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
 @Slf4j
 @Service
 public class UserInfoService {
     private static final Logger logger = LoggerFactory.getLogger(UserInfoService.class);
 
-    public static final int MAX_LENGTH_PERSON_ID = 12;
+    public static final long CORRECT_LENGTH_PERSON_ID = 12L;
     private final UserInfoRepository userInfoRepository;
 
     public UserInfoService(UserInfoRepository userInfoRepository) {
@@ -26,9 +27,7 @@ public class UserInfoService {
 
     public List<UserInfoDTO> findAllUsersDetail() {
         final List<UserInfo> userInfos = userInfoRepository.findAll(Sort.by("id"));
-        return userInfos.stream()
-                .map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO()))
-                .toList();
+        return userInfos.stream().map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO())).toList();
     }
 
     public List<UserInfoDTO> findAllUsers() {
@@ -37,9 +36,7 @@ public class UserInfoService {
             user.setPersonId(null);
             user.setUuid(null);
         });
-        return userInfos.stream()
-                .map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO()))
-                .toList();
+        return userInfos.stream().map(userInfo -> convertDomainToDTO(userInfo, new UserInfoDTO())).toList();
     }
 
     UserInfoDTO convertDomainToDTO(final UserInfo userInfo, final UserInfoDTO userInfoDTO) {
@@ -61,9 +58,9 @@ public class UserInfoService {
 
     public UserInfoDTO getUserByIdDetail(Long id) {
         UserInfo userInfoById = userInfoRepository.findById(id).orElse(null);
-        if(userInfoById!= null) {
+        if (userInfoById != null) {
             return convertDomainToDTO(userInfoById, new UserInfoDTO());
-        }else return null;
+        } else return null;
     }
 
     public UserInfoDTO getUserById(Long id) {
@@ -89,8 +86,8 @@ public class UserInfoService {
     }
 
     public void validateNewPerson(String personId) {
-        if (personId.length() != MAX_LENGTH_PERSON_ID) {
-            String errorMessage = "PersonId length doesn't match. It needs to have exactly: " + MAX_LENGTH_PERSON_ID + " characters";
+        if (personId.length() != CORRECT_LENGTH_PERSON_ID) {
+            String errorMessage = "PersonId length doesn't match. It needs to have exactly: " + CORRECT_LENGTH_PERSON_ID + " characters";
             logger.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
@@ -103,12 +100,11 @@ public class UserInfoService {
 
     public void updateUserById(Long id, UserInfoDTO userInfoDTO) {
         UserInfo convertedUserInfo = mapDTOToDomain(userInfoDTO);
-        userInfoRepository.findById(id).ifPresent(
-                existingUserInfo -> {
-                    existingUserInfo.setName(convertedUserInfo.getName());
-                    existingUserInfo.setSurname(convertedUserInfo.getSurname());
-                    userInfoRepository.save(existingUserInfo);
-                });
+        userInfoRepository.findById(id).ifPresent(existingUserInfo -> {
+            existingUserInfo.setName(convertedUserInfo.getName());
+            existingUserInfo.setSurname(convertedUserInfo.getSurname());
+            userInfoRepository.save(existingUserInfo);
+        });
     }
 
     public void delete(Long id) {

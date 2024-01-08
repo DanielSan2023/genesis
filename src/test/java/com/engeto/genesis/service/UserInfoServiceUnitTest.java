@@ -3,12 +3,14 @@ package com.engeto.genesis.service;
 import com.engeto.genesis.domain.UserInfo;
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.repository.UserInfoRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,7 +34,7 @@ public class UserInfoServiceUnitTest {
 
 
     @Test
-    public void GIVEN_userInfo_List_WHEN_called_findAllUsersDetail_THEN_return_userInfo_List_with_all_parameters() {
+    public void GIVEN_userInfo_List_WHEN_findAllUsersDetail_THEN_return_userInfo_List_with_all_parameters() {
         //GIVEN
         UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
         UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
@@ -56,7 +59,7 @@ public class UserInfoServiceUnitTest {
     }
 
     @Test
-    public void GIVEN_userInfo_List_WHEN_called_findAllUsers_THEN_return_userInfo_List_without_detail() {
+    public void GIVEN_userInfo_List_WHEN_findAllUsers_THEN_return_userInfo_List_without_detail() {
         //GIVEN
         UserInfo userInfo1 = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
         UserInfo userInfo2 = (new UserInfo("jerry", "jetsky", "123456789123", "someUuid"));
@@ -68,6 +71,7 @@ public class UserInfoServiceUnitTest {
 
         Optional<UserInfoDTO> optionalUserByNameMike = resultList
                 .stream().filter(userInfoDTO -> ("mike").equals(userInfoDTO.getName())).findFirst();
+
         Optional<UserInfoDTO> optionalUserByNameJerry = resultList
                 .stream().filter(userInfoDTO -> ("jerry").equals(userInfoDTO.getName())).findFirst();
 
@@ -89,7 +93,7 @@ public class UserInfoServiceUnitTest {
     }
 
     @Test
-    public void GIVEN_userInfoDTO_WHEN_called_mapDTOToDomain_THEN_return_converted_userInfo_checked() {
+    public void GIVEN_userInfoDTO_WHEN_mapDTOToDomain_THEN_return_converted_userInfo_checked() {
         //GIVEN
         UserInfoDTO mockDTO = mock(UserInfoDTO.class);
         when(mockDTO.getId()).thenReturn(1L);
@@ -106,7 +110,7 @@ public class UserInfoServiceUnitTest {
     }
 
     @Test
-    public void GIVEN_userInfo_WHEN_called_getUserByIdDetail_THEN_return_savedUserInfo_with_detail_checked() {
+    public void GIVEN_userInfo_WHEN_getUserByIdDetail_THEN_return_savedUserInfo_with_detail_checked() {
         //GIVEN
         Long userId = 1L;
         UserInfo userInfo = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
@@ -117,12 +121,14 @@ public class UserInfoServiceUnitTest {
 
         //THEN
         assertThat(resultUserInfoDTO).isNotNull();
+        assertThat(resultUserInfoDTO.getName()).isEqualTo(userInfo.getName());
+        assertThat(resultUserInfoDTO.getSurname()).isEqualTo(userInfo.getSurname());
         assertThat(resultUserInfoDTO.getPersonId()).isEqualTo(userInfo.getPersonId());
         assertThat(resultUserInfoDTO.getUuid()).isEqualTo(userInfo.getUuid());
     }
 
     @Test
-    public void GIVEN_userInfo_non_exist_WHEN_called_getUserByIdDetail_THEN_returned_null() {
+    public void GIVEN_userInfo_WHEN_getUserByIdDetail_THEN_returned_null() {
         //GIVEN
         Long userId = 100L;
         when(userInfoRepository.findById(userId)).thenReturn(Optional.empty());
@@ -135,7 +141,7 @@ public class UserInfoServiceUnitTest {
     }
 
     @Test
-    public void GIVEN_userInfo_WHEN_called_getUserById_THEN_return_savedUserInfo_without_detail_checked() {
+    public void GIVEN_userInfo_WHEN_getUserById_THEN_return_savedUserInfo_without_detail_checked() {
         //GIVEN
         Long userId = 1L;
         UserInfo userInfo = (new UserInfo("mike", "wazovsky", "123456789123", "someUuid"));
@@ -146,12 +152,14 @@ public class UserInfoServiceUnitTest {
 
         //THEN
         assertThat(resultUserInfoDTO).isNotNull();
-        assertThat(resultUserInfoDTO.getPersonId()).isEqualTo(null);
-        assertThat(resultUserInfoDTO.getUuid()).isEqualTo(null);
+        assertThat(resultUserInfoDTO.getName()).isEqualTo(userInfo.getName());
+        assertThat(resultUserInfoDTO.getSurname()).isEqualTo(userInfo.getSurname());
+        assertThat(resultUserInfoDTO.getPersonId()).isNull();
+        assertThat(resultUserInfoDTO.getUuid()).isNull();
     }
 
     @Test
-    public void GIVEN_userInfo_non_exist_WHEN_called_getUserById_THEN_returned_null() {
+    public void GIVEN_userInfo_WHEN_getUserById_THEN_returned_null() {
         //GIVEN
         Long userId = 100L;
         when(userInfoRepository.findById(userId)).thenReturn(Optional.empty());
@@ -164,31 +172,68 @@ public class UserInfoServiceUnitTest {
     }
 
     @Test
-    void GIVEN_db_with_non_existing_person_id_WHEN_createUser_is_called_THEN_save_is_called_once() { //TODO need to check
+    void GIVEN_mocked_userInfo_in_DB_WHEN_getUserById_THEN_return_dto_with_removed_personId_Uuid() {
+        //GIVEN
+        UserInfo userInfo = new UserInfo("mike", "wazovsky", "123456789123", "someUuid");
+        long id = 4L;
+        userInfo.setId(id);
+        when(userInfoRepository.findById(id)).thenReturn(Optional.of(userInfo));
+
+        //WHEN
+        UserInfoDTO dto = userInfoService.getUserById(id);
+
+        //THEN
+        assertThat(dto).isNotNull();
+        assertThat(dto.getId()).isEqualTo(userInfo.getId());
+        assertThat(dto.getName()).isEqualTo(userInfo.getName());
+        assertThat(dto.getSurname()).isEqualTo(userInfo.getSurname());
+        assertThat(dto.getPersonId()).isNull();
+        assertThat(dto.getUuid()).isNull();
+    }
+
+    @Test
+    void GIVEN_empty_DB_WHEN_getUserById_THEN_return_null() {
+        //GIVEN
+        long id = 4L;
+        when(userInfoRepository.findById(id)).thenReturn(Optional.empty());
+
+        //WHEN
+        UserInfoDTO dto = userInfoService.getUserById(id);
+
+        //THEN
+        assertThat(dto).isNull();
+    }
+
+    @Test
+    void GIVEN_person_id_WHEN_createUser_THEN_save_is_called_once() {
         //GIVEN
         String personId = "852963821654";
         UserInfoDTO userInfoDTO = new UserInfoDTO("Tom", "Tailor", personId, "someUuid");
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(false);
 
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userInfoDTO, userInfo);
+        when(userInfoRepository.save(Mockito.any())).thenReturn(userInfo);
+
         //WHEN
-        UserInfoDTO resultUserInfoDTO = userInfoService.createUser(userInfoDTO);
+        UserInfoDTO dto = userInfoService.createUser(userInfoDTO);
 
         //THEN
-        Mockito.verify(userInfoRepository, times(1)).save(new UserInfo());
+        Mockito.verify(userInfoRepository, times(1)).save(any());
     }
 
     @Test
-    void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {//TODO need to check
+    void GIVEN_db_with_existing_person_id_WHEN_createUser_is_called_THEN_save_is_not_called() {
         //GIVEN
         String personId = "852963821654";
         UserInfoDTO userInfoDTO = createUserInfo(personId);
         when(userInfoRepository.existsByPersonIdIgnoreCase(personId)).thenReturn(true);
 
         //WHEN
-        userInfoService.createUser(userInfoDTO);
+        assertThrows(RuntimeException.class, () -> userInfoService.createUser(userInfoDTO));
 
         //THEN
-        Mockito.verify(userInfoRepository, times(0)).save(new UserInfo());
+        Mockito.verify(userInfoRepository, times(0)).save(any());
     }
 
     private UserInfoDTO createUserInfo(String personId) {
@@ -200,80 +245,81 @@ public class UserInfoServiceUnitTest {
 
     @Test
     public void test_max_Length_Person_Id_with_correct_Id_Length() {
-        int expectedLength = 12;
-        int actualMaxLength = UserInfoService.MAX_LENGTH_PERSON_ID;
+        //GIVEN
+        String personId = "852963821611656554";
+        UserInfoDTO userInfoDTO = new UserInfoDTO("Tom", "Tailor", personId, "someUuid");
 
-        assertThat(actualMaxLength).isEqualTo(expectedLength);
+        //WHEN
+        assertThrows(RuntimeException.class, () -> userInfoService.createUser(userInfoDTO));
+
+        //THEN
+        Mockito.verify(userInfoRepository, times(0)).save(any());
     }
 
     @Test
-    void GIVEN_max_length_personId_WHEN_called_validateNewPerson_THEN_return_nothing_fall_Exceptions() {
+    public void test_min_Length_Person_Id_with_correct_Id_Length() {
         //GIVEN
-        String personId = "12345678901234567890";
+        String personId = "85254";
+        UserInfoDTO userInfoDTO = new UserInfoDTO("Tom", "Tailor", personId, "someUuid");
+
         //WHEN
+        assertThrows(RuntimeException.class, () -> userInfoService.createUser(userInfoDTO));
 
         //THEN
-
+        Mockito.verify(userInfoRepository, times(0)).save(any());
     }
 
     @Test
-    void GIVEN_min_length_personId_WHEN_called_validateNewPerson_THEN_return_nothing_fall_Exceptions() {
+    public void GIVEN_userInfo_WHEN_updateUserById_THEN_saved_DB() {
         //GIVEN
-        String personId = "12345678901234567890";
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setName("Tom");
+        userInfoDTO.setSurname("Cruise");
+
+        UserInfoDTO existUserInfoDTO = new UserInfoDTO("OldName", "OldSurname", "951357852654", "someUuid");
+        existUserInfoDTO.setId(5L);
+
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(existUserInfoDTO, userInfo);
+        when(userInfoRepository.findById(5L)).thenReturn(Optional.of(userInfo));
+
         //WHEN
+        userInfoService.updateUserById(5L, userInfoDTO);
+        assertThat(userInfo.getName()).isEqualTo(userInfoDTO.getName());
+        assertThat(userInfo.getSurname()).isEqualTo(userInfoDTO.getSurname());
+        assertThat(userInfo.getPersonId()).isEqualTo(existUserInfoDTO.getPersonId());
+        assertThat(userInfo.getUuid()).isEqualTo(existUserInfoDTO.getUuid());
 
         //THEN
-
+        verify(userInfoRepository, times(1)).save(any());
     }
 
     @Test
-    void GIVEN_exist_correct_personId_WHEN_called_validateNewPerson_THEN_return_nothing_fall_Exceptions() {
+    public void GIVEN_userInfo_WHEN_updateUserById_THEN_will_not_saved_DB() {
         //GIVEN
-        String personId = "12345678901234567890";
+        long userId = 2L;
+        UserInfoDTO existUserInfoDTO = new UserInfoDTO("OldName", "OldSurname", "951357852654", "someUuid");
+
+        when(userInfoRepository.findById(2L)).thenReturn(Optional.empty());
+
         //WHEN
+        userInfoService.updateUserById(userId, existUserInfoDTO);
 
         //THEN
-
+        verify(userInfoRepository, never()).save(any());
     }
 
     @Test
-    void GIVEN_new_correct_personId_WHEN_called_validateNewPerson_THEN_return_nothing() {
+    void GIVEN_userInfo_Id_WHEN_delete_userInfo_THEN_remove_userInfo() {
         //GIVEN
-        String personId = "12345678901234567890";
-        //WHEN
+        long userId = 2L;
 
-        //THEN
-
-    }
-
-    @Test
-    void GIVEN_correct_person_Id_and_UserInfo_WHEN_called_updateUserById_THEN_called_save() {
-        //GIVEN
-        String personId = "12345678901234567890";
-        //WHEN
-
-        //THEN
-
-    }
-
-    @Test
-    void GIVEN_incorrect_person_Id_and_UserInfo_WHEN_called_updateUserById_THEN_do_nothing() {
-        //GIVEN
-        String personId = "12345678901234567890";
-        //WHEN
-
-        //THEN
-
-    }
-
-    @Test
-    void GIVEN_userInfo_Id_WHEN_called_deleteUserById_THEN_return_nothing() {
-        //GIVEN
+        doNothing().when(userInfoRepository).deleteById(userId);
 
         //WHEN
+        userInfoService.delete(userId);
 
         //THEN
-
+        verify(userInfoRepository, times(1)).deleteById(any());
     }
-
 }
