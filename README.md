@@ -54,8 +54,8 @@ CREATE TABLE user_info
 ```sql
 INSERT INTO user_info (name, surname, person_id, uuid)
 VALUES ('Alain', 'Morisette', '123144789987', '4b72e0e6-ee1c-4494-8942-bfa47b444830'),
-       ('james', 'brant', '1237865f4321', '317544d2-30cc-4b39-832a-152b91085e10'),
-       ('Alain', 'Morisette', '1235765f8721', 'edcd6bbc-eece-4a06-936f-0f331d7d715b');
+       ('James', 'Blant', '1237865f4321', '317544d2-30cc-4b39-832a-152b91085e10'),
+       ('Bruce', 'Lee', '1235765f8721', 'edcd6bbc-eece-4a06-936f-0f331d7d715b');
 ```
 
 </details>
@@ -63,3 +63,8 @@ VALUES ('Alain', 'Morisette', '123144789987', '4b72e0e6-ee1c-4494-8942-bfa47b444
 ## Postman
 
 [Link  Postman export](GenesisResources.postman_collection.json)
+
+## Front-end web
+[link for web](http://localhost:8080/index.html)
+
+

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Info</title>
+    <style>
+        h1, h5 {
+            display: inline;
+            margin-right: 10px; /* Adjust as needed */
+        }
+    </style>
+</head>
+<body>
+
+<h1> Genesis Resources</h1>
+<h5>(registration form)</h5>
+
+<h3> Create User</h3>
+<form id="createUserForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="surname">Surname:</label>
+    <input type="text" id="surname" name="surname" required><br>
+
+    <label for="personId">Person ID:</label>
+    <input type="text" id="personId" name="personId" required><br>
+
+    <button type="button" onclick="createUser()">Create User</button>
+</form>
+
+<h3>Find Users</h3>
+
+<form id="findAllUsers">
+    <button type="button" onclick="findAllUsers()">All Users</button>
+</form>
+
+<form id="findUserById">
+    <button type="button" onclick="findUserById()">User by Id</button>
+</form>
+
+<h3> Update User</h3>
+<form id="updateUserForm">
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId" name="userId" required><br>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name_up" name="name" required><br>
+
+    <label for="surname">Surname:</label>
+    <input type="text" id="surname_up" name="surname" required><br>
+
+    <button type="button" onclick="updateById()">Update User</button>
+</form>
+
+<h3> Delete User</h3>
+
+<form id="deleteUserForm">
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId_del" name="userId" required><br>
+
+    <button type="button" onclick="deleteUser()">Delete User</button>
+</form>
+
+
+<div id="result"></div>
+
+<script>
+    function findAllUsers() {
+        fetch('/api/v1/users')
+            .then(response => response.json())
+            .then(data => {
+                displayUsers(data);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function displayUsers(users) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '<h3>User Info:</h3>';
+
+        if (users.length === 0) {
+            resultDiv.innerHTML += '<p>No users found</p>';
+        } else {
+            users.forEach(user => {
+                resultDiv.innerHTML += `<p>${JSON.stringify(user)}</p>`;
+            });
+        }
+    }
+
+    function findUserById() {
+        const userId = prompt('Enter User ID:');
+
+        if (userId !== null && userId.trim() !== '') {
+            fetch(`/api/v1/user/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`User not found with ID: ${userId}`);
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    displayUser(user);
+                })
+                .catch(error => {
+                    console.error('Error:', error.message);
+                    alert('User not found!');
+                });
+        }
+    }
+
+    function displayUser(user) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '<h3>User Info:</h3>';
+        resultDiv.innerHTML += `<p>${JSON.stringify(user)}</p>`;
+    }
+
+    function createUser() {
+        const name = document.getElementById('name').value;
+        const surname = document.getElementById('surname').value;
+        const personId = document.getElementById('personId').value;
+
+        const userData = {
+            name: name,
+            surname: surname,
+            personId: personId
+        };
+
+        fetch('/api/v1/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to create user: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(createdUser => {
+                alert('User created successfully!');
+                console.log('Created User:', createdUser);
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Error creating user!');
+            });
+    }
+    function updateById() {
+        const userId = document.getElementById('userId').value;
+        const nameInput = document.getElementById('name_up');
+        const surnameInput = document.getElementById('surname_up');
+
+        const parsedUserId = parseInt(userId);
+
+        if (isNaN(parsedUserId)) {
+            alert('Invalid User ID. Please enter a valid number.');
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const surname = surnameInput.value.trim();
+
+        if (!name || !surname) {
+            alert('Name and surname are required.');
+            return;
+        }
+
+        const updatedUserData = {
+            name: name,
+            surname: surname
+        };
+
+        fetch(`/api/v1/user/${parsedUserId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedUserData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to update user: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(updatedUser => {
+                alert('Name and Surname updated successfully!');
+                console.log('Updated User:', updatedUser);
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Error updating user!');
+            });
+    }
+
+
+    function deleteUser() {
+        const userId = document.getElementById('userId_del').value;
+
+        const parsedUserId = parseInt(userId);
+
+        if (isNaN(parsedUserId)) {
+            alert('Invalid User ID. Please enter a valid number.');
+            return;
+        }
+
+        fetch(`/api/v1/user/${parsedUserId}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to delete user: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(responseText => {
+                alert('User deleted successfully!');
+                console.log('Response:', responseText);
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Error deleting user!');
+            });
+    }
+
+</script>
+
+</body>
+</html>

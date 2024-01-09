@@ -46,7 +46,7 @@ public class UserInfoServiceUnitTest {
 
         //THEN
         verify(userInfoRepository).findAll(Sort.by("id"));
-        //  assertThat(new ArrayList<>(resultList)).isEqualTo(mockUserInfosDTO); //TODO compare two list
+        // assertThat(resultList).hasSameElementsAs(mockUserInfosDTO);//TODO compare two list
         assertThat(resultList).hasSize(2);
     }
 
