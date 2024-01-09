@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class UserInfoDTO {
 
     private Long id;
