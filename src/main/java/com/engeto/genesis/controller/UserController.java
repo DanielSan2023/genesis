@@ -2,7 +2,6 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -43,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserInfoDTO>> getAll(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
+    public ResponseEntity<List<UserInfoDTO>> getAllSortedById(@RequestParam(name = "detail", defaultValue = "false") boolean detail) {
         List<UserInfoDTO> usersList;
         if (detail) {
             usersList = userInfoService.findAllUsersDetail();
