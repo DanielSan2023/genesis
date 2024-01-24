@@ -114,7 +114,7 @@ class UserInfoControllerUnitTest {
         when(userInfoService.findAllUsersDetail()).thenReturn(null);
 
         //WHEN
-        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAll(true);
+        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAllSortedById(true);
 
         //THEN
         assertThat(userInfosList.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -130,7 +130,7 @@ class UserInfoControllerUnitTest {
         when(userInfoService.findAllUsersDetail()).thenReturn(userInfoDTOList);
 
         //WHEN
-        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAll(true);
+        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAllSortedById(true);
 
         //THEN
         assertThat(userInfosList.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -143,7 +143,7 @@ class UserInfoControllerUnitTest {
         when(userInfoService.findAllUsers()).thenReturn(null);
 
         //WHEN
-        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAll(false);
+        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAllSortedById(false);
 
         //THEN
         assertThat(userInfosList.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -159,7 +159,7 @@ class UserInfoControllerUnitTest {
         when(userInfoService.findAllUsers()).thenReturn(userInfoDTOList);
 
         //WHEN
-        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAll(false);
+        ResponseEntity<List<UserInfoDTO>> userInfosList = userController.getAllSortedById(false);
 
         //THEN
         assertThat(userInfosList.getStatusCode()).isEqualTo(HttpStatus.OK);
