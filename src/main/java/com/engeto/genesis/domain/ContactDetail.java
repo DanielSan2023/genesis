@@ -17,16 +17,15 @@ public class ContactDetail {
     )
     private Long id;
 
-
     @ManyToOne
     @JoinColumn(name = "userInfo_id")
     private UserInfo userId;
 
     @ManyToOne
     @JoinColumn(name = "contactType_id")
-    private  ContactType type;
+    private  ContactType typeId;
 
     @Column
-    private String contType;
+    private String value;
 
 }

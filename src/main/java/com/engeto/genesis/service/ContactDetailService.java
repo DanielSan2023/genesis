@@ -18,15 +18,15 @@ public class ContactDetailService {
     private final ContactDetailRepository contactDetailRepository;
     private ModelMapper modelMapper;
 
-    public List<ContactDetailDTO> findAllContactDetailsSortById() {
-        final List<ContactDetail> contactDetailList = contactDetailRepository.findAll(Sort.by("id"));
-        return contactDetailList.stream().map(this::convertToDto).toList();
-    }
-
     public ContactDetailDTO createContact(ContactDetailDTO contactDetailDTO) {
         ContactDetail contactDetail = convertToDomain(contactDetailDTO);
         contactDetailRepository.save(contactDetail);
         return contactDetailDTO;
+    }
+
+    public List<ContactDetailDTO> findAllContactDetailsSortById() {
+        final List<ContactDetail> contactDetailList = contactDetailRepository.findAll(Sort.by("id"));
+        return contactDetailList.stream().map(this::convertToDto).toList();
     }
 
     public void delete(Long id) {

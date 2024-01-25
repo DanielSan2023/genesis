@@ -20,7 +20,7 @@ public class ContactDetailDTO {
     private UserInfo userId;
 
     @Size(max = 255)
-    private ContactType type;
+    private ContactType typeId;
 
     @Size(max = 255)
     private String value;
