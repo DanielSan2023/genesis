@@ -1,4 +1,4 @@
-# Genesis
+# Genesis Upgrade
 
 This app was created with Spring.io - tips on working with the code [can be found here](https://start.spring.io/)).
 Feel free to contact us for further questions.
@@ -27,9 +27,9 @@ The application can be used with Postman and connect to a real Mysql database.
 
   ```sql
   CREATE
-DATABASE `genesis`
-  /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */
-  /*!80016 DEFAULT ENCRYPTION='N' */;
+    DATABASE `genesis`
+    /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */
+    /*!80016 DEFAULT ENCRYPTION = 'N' */;
   ```
 
 </details>
@@ -59,12 +59,41 @@ VALUES ('Alain', 'Morisette', '123144789987', '4b72e0e6-ee1c-4494-8942-bfa47b444
 ```
 
 </details>
+<details>
+  <summary>Create Table "contact_detail"...</summary>
+
+```sql
+CREATE TABLE contact_detail
+(
+    id             BIGINT PRIMARY KEY AUTO_INCREMENT,
+    userInfo_id    BIGINT,
+    contactType_id BIGINT,
+    value          VARCHAR(255),
+    FOREIGN KEY (userInfo_id) REFERENCES user_info (id),
+    FOREIGN KEY (contactType_id) REFERENCES contact_type (id)
+);
+```
+
+</details>
+<details>
+  <summary>Create Table "contactType"...</summary>
+
+```sql
+CREATE TABLE contact_type
+(
+    id   BIGINT PRIMARY KEY AUTO_INCREMENT,
+    type VARCHAR(255)
+);
+
+```
+</details>
 
 ## Postman
 
-[Link  Postman export](GenesisResources.postman_collection.json)
+[Link  Postman export](GenesisResourcesUpgrade.postman_collection.json)
 
 ## Front-end web
+
 [link for web](http://localhost:8080/index.html)
 
 

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ContactDetailRepository extends JpaRepository<ContactDetail,Long> {
 
-   // boolean existsByContactDetailIgnoreCase(String id);
+
 }
