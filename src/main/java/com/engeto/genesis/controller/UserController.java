@@ -2,6 +2,7 @@ package com.engeto.genesis.controller;
 
 import com.engeto.genesis.model.UserInfoDTO;
 import com.engeto.genesis.service.UserInfoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<UserInfoDTO> createUser(@RequestBody UserInfoDTO userInfoDTO) {
+    public ResponseEntity<UserInfoDTO> createUser(@Valid @RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO createdUserInfo = userInfoService.createUser(userInfoDTO);
         return new ResponseEntity<>(createdUserInfo, HttpStatus.CREATED);
     }

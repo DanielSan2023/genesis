@@ -15,18 +15,18 @@ public class UserInfoDTO {
 
     private Long id;
 
-    @NotNull
+    @NotNull(message = "name shouldn't be null")
     @Size(max = 255)
     private String name;
 
+    @NotNull(message = "surname shouldn't be null")
     @Size(max = 255)
     private String surname;
 
-    @NotNull
-    @Size(max = 12)
+    @NotNull(message = "It needs to have exactly: 12 characters")
+    @Size(min = 12, max = 12, message = "Person ID must be exactly 12 characters long")
     private String personId;
 
-    @NotNull
     @Size(max = 255)
     private String uuid;
 
