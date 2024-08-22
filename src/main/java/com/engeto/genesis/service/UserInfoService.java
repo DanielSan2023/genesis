@@ -10,6 +10,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,6 +99,26 @@ public class UserInfoService {
             logger.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
+        if(personIdAlreadyExist(personId)){
+            String errorMessage = "PersonId: " + personId + " already exists in dataPersonId file";
+            logger.error(errorMessage);
+            throw new RuntimeException(errorMessage);
+        }
+    }
+
+
+    public boolean personIdAlreadyExist(String personId){
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\elect\\EngetoPart2\\genesis\\src\\main\\resources\\dataPersonId.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains(personId)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void updateUserById(Long id, UserInfoDTO userInfoDTO) {
