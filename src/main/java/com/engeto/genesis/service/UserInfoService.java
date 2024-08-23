@@ -99,15 +99,14 @@ public class UserInfoService {
             logger.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
-        if(personIdAlreadyExist(personId)){
-            String errorMessage = "PersonId: " + personId + " already exists in dataPersonId file";
+        if (!checkValidPersonIdAFile(personId)) {
+            String errorMessage = "PersonId: " + personId + " is invalid  ID!";
             logger.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
     }
 
-
-    public boolean personIdAlreadyExist(String personId){
+    public boolean checkValidPersonIdAFile(String personId) {
         try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\elect\\EngetoPart2\\genesis\\src\\main\\resources\\dataPersonId.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
