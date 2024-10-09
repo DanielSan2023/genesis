@@ -29,7 +29,7 @@ CREATE TABLE `user_info` (
   `name` varchar(45) NOT NULL,
   `surname` varchar(45) DEFAULT NULL,
   `person_id` varchar(45) NOT NULL,
-  `uuid` varchar(45) NOT NULL,
+  `uuid` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
